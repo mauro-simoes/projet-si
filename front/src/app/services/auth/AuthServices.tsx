@@ -3,35 +3,22 @@ import { AuthResponse, LogInRequest, SignUpRequest } from '@/app/models/auth/Aut
 import axios from 'axios';
 
 
-export function signUp(request: SignUpRequest) :void {
+export async function signUp(request: SignUpRequest) :Promise<AuthResponse> {
     var url :string = API_URL + "/creer-compte";
-    axios.post(url,request, {
+    return axios.post(url,request, {
         headers: {
-        Accept: "application/json",
+        "Accept": "application/json",
         "Content-Type": "application/json;charset=UTF-8",
         },
     })
-    .then(({data}) => {
-        console.log(data);
-        handleToken(data)
-    });
 } 
 
-export function login(request: LogInRequest) :void {
+export async function login(request: LogInRequest) :Promise<AuthResponse> {
     var url :string = API_URL + "/login";
-    axios.post(url,request, {
+    return axios.post(url,request, {
         headers: {
-        Accept: "application/json",
+        "Accept": "application/json",
         "Content-Type": "application/json;charset=UTF-8",
         },
     })
-    .then(({data}) => {
-        console.log(data);
-        handleToken(data);
-    });
 } 
-
-
-function handleToken(data :AuthResponse){
-
-}
