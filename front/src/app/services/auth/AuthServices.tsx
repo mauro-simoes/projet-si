@@ -5,6 +5,7 @@ import axios from 'axios';
 
 export async function signUp(request: SignUpRequest) :Promise<AuthResponse> {
     var url :string = API_URL + "/creer-compte";
+    console.log("url ",url);
     return axios.post(url,request, {
         headers: {
         "Accept": "application/json",
@@ -13,7 +14,7 @@ export async function signUp(request: SignUpRequest) :Promise<AuthResponse> {
     })
 } 
 
-export async function login(request: LogInRequest) :Promise<AuthResponse> {
+export async function logIn(request: LogInRequest) :Promise<AuthResponse> {
     var url :string = API_URL + "/login";
     return axios.post(url,request, {
         headers: {

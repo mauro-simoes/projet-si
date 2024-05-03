@@ -1,7 +1,7 @@
 
 export interface LogInRequest {
     email: String,
-    motdePasse: String
+    motDePasse: String
 }
 
 export interface SignUpRequest {
