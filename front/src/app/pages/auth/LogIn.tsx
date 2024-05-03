@@ -16,8 +16,8 @@ import {
     FormItem,
     FormLabel,
     FormMessage,
-  } from "@/components/ui/form"
-import Link from "next/link"
+  } from "@/components/ui/form";
+import  {Link } from "react-router-dom";
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -110,10 +110,11 @@ export default function LogIn() {
                     </form>
                     <div className="mt-4 text-center text-sm">
                         Vous n'avez pas de compte ?{" "}
-                        <Link href="#" className="underline">Inscrivez-vous</Link>
+                        <Link to="/" className="underline">Inscrivez-vous</Link>
                     </div>
                 </Form>
             </CardContent>
         </Card>
+        
     );
 }
