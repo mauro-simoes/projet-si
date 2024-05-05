@@ -36,6 +36,14 @@ const formSchema = z.object({
     adresse: z.string().min(1,"Veuillez entrer votre addresse"),
 })
 
+const initialState = {
+    email:"",
+    prenom:"",
+    nom: "",
+    adresse: "",
+    password:""
+} 
+
 export default function SignUp() {
 
     // const [cookies, setCookie] = useCookies(['token','refreshToken'])
@@ -50,8 +58,9 @@ export default function SignUp() {
     }
 
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-    })
+        defaultValues:initialState,
+        resolver: zodResolver(formSchema)
+    });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         signUp(extractInterface(values))
@@ -90,7 +99,7 @@ export default function SignUp() {
                                             <FormItem>
                                                 <FormLabel>Nom</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <Input {...field}  />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -121,7 +130,7 @@ export default function SignUp() {
                                         <FormItem>
                                             <FormLabel>Email</FormLabel>
                                             <FormControl>
-                                                <Input {...field} />
+                                                <Input {...field}  />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -136,7 +145,7 @@ export default function SignUp() {
                                         <FormItem>
                                             <FormLabel>Adresse</FormLabel>
                                             <FormControl>
-                                                <Input {...field} />
+                                                <Input {...field}  />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
