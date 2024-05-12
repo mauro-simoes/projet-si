@@ -3,7 +3,6 @@
 import { AuthResponse, SignUpRequest } from '@/app/models/auth/AuthModels';
 import { signUp } from '@/app/services/auth/AuthServices';
 import React from 'react'
-// import { useCookies } from 'react-cookie';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -36,9 +35,15 @@ const formSchema = z.object({
     adresse: z.string().min(1,"Veuillez entrer votre addresse"),
 })
 
-export default function SignUp() {
+const initialState = {
+    email:"",
+    prenom:"",
+    nom: "",
+    adresse: "",
+    password:""
+} 
 
-    // const [cookies, setCookie] = useCookies(['token','refreshToken'])
+export default function SignUp() {
 
     const extractInterface = (values: z.infer<typeof formSchema>) => {
         return {
@@ -50,24 +55,23 @@ export default function SignUp() {
     }
 
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
-    })
+        defaultValues:initialState,
+        resolver: zodResolver(formSchema)
+    });
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         signUp(extractInterface(values))
         .catch(error => console.log("error",error))
         .then(authResponse => {
-            console.log(authResponse);
-            // if(authResponse != null)
-            //     handleToken(authResponse);
+            if(authResponse != null)
+                handleToken(authResponse);
         });
-        console.log("values",values);
     }
 
-    // function handleToken(authResponse :AuthResponse){
-    //     setCookie("token", authResponse.token, { path: '/', httpOnly:true });
-    //     setCookie('refreshToken', authResponse.refreshToken, { path: '/', httpOnly:true });
-    // }
+    function handleToken(authResponse :AuthResponse){
+        localStorage.setItem("token", authResponse.token);
+        localStorage.setItem("refreshToken", authResponse.refreshToken);
+    }
 
     return (
         <Card className="mx-auto max-w-sm">
@@ -79,7 +83,7 @@ export default function SignUp() {
             </CardHeader>
             <CardContent>
                 <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <form method="POST" onSubmit={form.handleSubmit(onSubmit)}>
                         <div className="grid gap-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="grid gap-2">
@@ -90,7 +94,7 @@ export default function SignUp() {
                                             <FormItem>
                                                 <FormLabel>Nom</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} />
+                                                    <Input {...field}  />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -121,7 +125,7 @@ export default function SignUp() {
                                         <FormItem>
                                             <FormLabel>Email</FormLabel>
                                             <FormControl>
-                                                <Input {...field} />
+                                                <Input {...field}  />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -136,7 +140,7 @@ export default function SignUp() {
                                         <FormItem>
                                             <FormLabel>Adresse</FormLabel>
                                             <FormControl>
-                                                <Input {...field} />
+                                                <Input {...field}  />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
