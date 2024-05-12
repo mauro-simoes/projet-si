@@ -45,6 +45,7 @@ import { Label } from '@/components/ui/label'
 
 
 export default function Management() {
+  const [motDePasse, setMotDePasse] = useState("");
 
   const [token,setToken] = useState("");
   const [users,setUsers] = useState([{} as User]);
@@ -94,7 +95,7 @@ export default function Management() {
     catch(error => {
       toast.error("Echec de la mise à jour", error);
     });
-    loadData();
+    setMotDePasse("");
   }
 
   function loadData(){
@@ -183,10 +184,10 @@ export default function Management() {
                             </DialogHeader>
                               <div className="items-center ">
                                 <Label className="my-2.5">Mot de passe</Label>
-                                <Input className="col-span-3" />
+                                <Input className="col-span-3" onChange={(e) => {setMotDePasse(e.target.value)}}/>
                               </div>
                             <DialogFooter>
-                              <Button onClick={() => changePassword(user.userId, "pass")}>Sauvegarder</Button>
+                              <Button onClick={() => changePassword(user.userId, motDePasse)}>Sauvegarder</Button>
                             </DialogFooter>
                           </DialogContent>
                         </Dialog>
