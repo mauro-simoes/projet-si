@@ -1,9 +1,8 @@
 "use client"
 
-import { LogInRequest } from '@/app/models/auth/AuthModels';
+import { AuthResponse, LogInRequest } from '@/app/models/auth/AuthModels';
 import { logIn } from '@/app/services/auth/AuthServices';
 import React from 'react'
-// import { useCookies } from 'react-cookie';
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -31,11 +30,14 @@ import { Input } from "@/components/ui/input"
 const formSchema = z.object({
     email: z.string().email("Veuillez entrer un mail valide"),
     password: z.string().min(8,"Le mot de passe doit contenir au moins 8 caractères"),
-})
+});
+
+const initialState = {
+    email:"",
+    password:""
+} 
 
 export default function LogIn() {
-
-    // const [cookies, setCookie] = useCookies(['token','refreshToken'])
 
     const extractInterface = (values: z.infer<typeof formSchema>) => {
         return {
@@ -44,6 +46,7 @@ export default function LogIn() {
     }
 
     const form = useForm<z.infer<typeof formSchema>>({
+        defaultValues:initialState,
         resolver: zodResolver(formSchema),
     })
 
@@ -51,17 +54,15 @@ export default function LogIn() {
         logIn(extractInterface(values))
         .catch(error => console.log("error",error))
         .then(authResponse => {
-            console.log(authResponse);
-            // if(authResponse != null)
-            //     handleToken(authResponse);
+            if(authResponse != null)
+                handleToken(authResponse);
         });
-        console.log("values",values);
     }
 
-    // function handleToken(authResponse :AuthResponse){
-    //     setCookie("token", authResponse.token, { path: '/', httpOnly:true });
-    //     setCookie('refreshToken', authResponse.refreshToken, { path: '/', httpOnly:true });
-    // }
+    function handleToken(authResponse :AuthResponse){
+        localStorage.setItem("token", authResponse.token);
+        localStorage.setItem("refreshToken", authResponse.refreshToken);
+    }
 
     return (
         <Card className="mx-auto max-w-sm shadow-lg">
@@ -73,7 +74,7 @@ export default function LogIn() {
             </CardHeader>
             <CardContent>
                 <Form {...form}>
-                    <form onSubmit={() => form.handleSubmit(onSubmit)}>
+                    <form method="POST" onSubmit={() => form.handleSubmit(onSubmit)}>
                         <div className="grid gap-4">
                             <div className="grid gap-2">
                                 <FormField
