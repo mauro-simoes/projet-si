@@ -2,13 +2,14 @@
 import Profile from "./pages/user/Profile";
 import LogIn from "./pages/auth/LogIn";
 import SignUp from "./pages/auth/SignUp";
+import Accueil from "./pages/Accueil";
 import {RouterProvider, createHashRouter } from "react-router-dom";
 import Management from "./pages/Management";
 
 const router = createHashRouter([
   {
     path:"/",
-    element:<Management/>
+    element:<Accueil/>
   },
   {
     path:"/inscription",

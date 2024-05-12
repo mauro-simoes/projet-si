@@ -9,13 +9,13 @@ import {
 import { Button } from "@/components/ui/button";
 
 const categories = [
-  { title: "Caméra", img: '../../assets/img/camera.jpg'},
-  { title: "Appareil Photo", img: '../../assets/appareil-photo.jpg'},
-  { title: "Microphone", img: '../../assets/microphone.jpg'},
-  { title: "Pied d'éclairage", img: '../../assets/pied-eclairage.jpg'},
-  { title: "Carte mémoire", img: '../../assets/carte-memoire.jpg'},
-  { title: "Moniteurs", img: '../../assets/moniteur.jpg'},
-  { title: "Streamers", img: '../../assets/streamer.jpg'}
+  { title: "Caméra", img: '/img/camera.jpg'},
+  { title: "Appareil Photo", img: '/appareil-photo.jpg'},
+  { title: "Microphone", img: '/microphone.jpg'},
+  { title: "Pied d'éclairage", img: '/pied-eclairage.jpg'},
+  { title: "Carte mémoire", img: '/carte-memoire.jpg'},
+  { title: "Moniteurs", img: '/moniteur.jpg'},
+  { title: "Streamers", img: '/streamer.jpg'}
 ];
 
 export default function Accueil() {
