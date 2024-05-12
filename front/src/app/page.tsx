@@ -3,7 +3,7 @@ import Profile from "./pages/user/Profile";
 import LogIn from "./pages/auth/LogIn";
 import SignUp from "./pages/auth/SignUp";
 import {RouterProvider, createHashRouter } from "react-router-dom";
-import Management from "./pages/Management";
+import Management from "./pages/management/Management";
 
 const router = createHashRouter([
   {

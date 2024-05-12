@@ -16,7 +16,6 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 import {
   Table,
@@ -34,17 +33,16 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { approveUserAccount, changeUserPasswordAsAdmin, getAllUsers, suspendUserAccount } from '../services/user/UserService'
-import { AdminPasswordChangeRequest, User } from '../models/user/UserModels'
+import { approveUserAccount, changeUserPasswordAsAdmin, getAllUsers, suspendUserAccount } from '../../services/user/UserService'
+import { AdminPasswordChangeRequest, User } from '../../models/user/UserModels'
 import { Button } from '@/components/ui/button'
-import { ACCOUNT_STATUSES, RADIE } from '../core/constants'
+import { ACCOUNT_STATUSES, RADIE } from '../../core/constants'
 import { toast } from 'sonner'
 import { Input} from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 
-export default function Management() {
+export default function UserManagement() {
   const [motDePasse, setMotDePasse] = useState("");
 
   const [token,setToken] = useState("");
@@ -52,7 +50,6 @@ export default function Management() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   function approveAccount(userId :number){
-    console.log("userId", userId);
     approveUserAccount(userId, token).
     then(data => {
       if(data){
@@ -68,7 +65,6 @@ export default function Management() {
   }
 
   function suspendAccount(userId :number){
-    console.log("userId", userId);
     suspendUserAccount(userId, token).
     then(data => {
       if(data){
@@ -114,18 +110,9 @@ export default function Management() {
   },[]);
 
   return (
-    <Tabs defaultValue="utilisateurs" className="mx-auto w-[600px]">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="produits">Produits</TabsTrigger>
-        <TabsTrigger value="utilisateurs">Utilisateurs</TabsTrigger>
-      </TabsList>
-      <TabsContent value="produits">
-      </TabsContent>
-      <TabsContent value="utilisateurs">
-        <Card>
+        <Card className='overflow-y-auto max-h-[600px]'>
           <CardHeader className="px-7">
-            <CardTitle>Clients</CardTitle>
-            <CardDescription>Recent orders from your store</CardDescription>
+            <CardDescription className="text-center">Gerez les utilisateurs ici</CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
@@ -133,7 +120,7 @@ export default function Management() {
                 <TableRow>
                   <TableHead>Client</TableHead>
                   <TableHead>Statut</TableHead>
-                  <TableHead className="text-center">Note</TableHead>
+                  <TableHead >Note</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
@@ -199,7 +186,5 @@ export default function Management() {
             </Table>
           </CardContent>
         </Card>
-      </TabsContent>
-    </Tabs>
   )
 }
