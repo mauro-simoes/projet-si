@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import {Avatar, AvatarImage } from '@/components/ui/avatar';
-import { getUserInfo, updateUserPassword, updateUserProfile } from '../services/user/UserService';
-import { PasswordChangeRequest, User } from '../models/user/UserModels';
+import { getUserInfo, updateUserPassword, updateUserProfile } from '../../services/user/UserService';
+import { PasswordChangeRequest, User } from '../../models/user/UserModels';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 
@@ -27,7 +27,8 @@ export default function Profile() {
             nom: user.nom,
             adresse: adresse,
             note: user.note,
-            avatar: avatar
+            avatar: avatar,
+            status : user.status
         } as User
     }
 
