@@ -3,20 +3,13 @@ import React, { useEffect, useState } from 'react'
 import { MoreHorizontal } from "lucide-react"
 
 import { Rating } from '@smastrom/react-rating'
-import { Badge } from "@/components/ui/badge"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-} from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -33,16 +26,25 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-import { approveUserAccount, changeUserPasswordAsAdmin, getAllUsers, suspendUserAccount } from '../../services/user/UserService'
-import { AdminPasswordChangeRequest, User } from '../../models/user/UserModels'
-import { Button } from '@/components/ui/button'
-import { ACCOUNT_STATUSES, RADIE } from '../../core/constants'
-import { toast } from 'sonner'
+import { Button } from '@/components/ui/button';
 import { Input} from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Product } from '@/app/models/product/ProductModels'
 import { getAllProducts } from '@/app/services/product/ProductService'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+  VisibilityState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable
+} from "@tanstack/react-table"
+import { ArrowUpDown, ChevronDown } from "lucide-react"
 
 
 export default function ProductManagement() {
@@ -74,8 +76,8 @@ export default function ProductManagement() {
 
   }
 
-  function loadData(){
-    getAllProducts(token)
+  function loadData(category:string){
+    getAllProducts(category, token)
       .then(data => {
           setProducts(data);
       })
@@ -86,110 +88,218 @@ export default function ProductManagement() {
       if(tokenLocalStorage == null){
           setToken("token");
       }
-      loadData();
+      loadData("");
   },[]);
 
+  const columns: ColumnDef<Product,any>[] = [
+    {
+      accessorKey: "product_name",
+      accessorFn:(row) => row.product_name,
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+            Produit
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div className="lowercase">{row.getValue("product_name")}</div>,
+    },
+    {
+      accessorKey: "stock",
+      accessorFn:(row) => row.stock,
+      header: () => <div >Stock</div>,
+      cell: ({ row }) => {
+        return <div className="font-medium">{row.getValue("stock")}</div>
+      },
+    },
+    {
+      accessorKey: "discount",
+      accessorFn:(row) => row.discount,
+      header: () => <div>Promotion en %</div>,
+      cell: ({ row }) => {
+        return <div className="font-medium">{row.getValue("discount")}</div>
+      },
+    },
+    {
+      accessorKey: "price",
+      accessorFn:(row) => row.price,
+      header: () => <div>Prix</div>,
+      cell: ({ row }) => {
+        const amount = parseFloat(row.getValue("price"))
+  
+        // Format the amount as a dollar amount
+        const formatted = new Intl.NumberFormat("en-GB", {
+          style: "currency",
+          currency: "EUR",
+        }).format(amount)
+  
+        return <div className="font-medium">{formatted}</div>
+      },
+    },
+    {
+      accessorKey: "Note",
+      accessorFn:(row) => row.product_note,
+      header: () => <div >Note</div>,
+      cell: ({ row }) => {
+        return <Rating
+        style={{ maxWidth: 100 }}
+        value={row.getValue("product_note")}
+        readOnly />
+      },
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const product = row.original
+  
+        return (
+          <>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button aria-haspopup="true" size="icon" variant="ghost">
+                <MoreHorizontal className="h-4 w-4" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem className='cursor-pointer' onClick={() => setIsEditDialogOpen(true)}>Modifier</DropdownMenuItem>
+            </DropdownMenuContent>
+            </DropdownMenu><Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+              <DialogContent className="sm:max-w-[500px]">
+                <DialogHeader>
+                  <DialogTitle>Mise à jour produit</DialogTitle>
+                  <DialogDescription>
+                    Produit : {product.product_name}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4">
+                  <div className="grid grid-cols-3 gap-6">
+                    <div className="grid gap-2">
+                      <Label htmlFor="new">Stock</Label>
+                      <Input type='number' defaultValue={product?.stock} min="0" onChange={e => setStock(Number(e.target.value))} />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="new">Remise en %</Label>
+                      <Input defaultValue={product?.discount} min="0" max="100" onChange={e => setDiscount(Number(e.target.value))} />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="new">Prix</Label>
+                      <Input defaultValue={product?.price} min="0" onChange={e => setPrice(Number(e.target.value))} />
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="new">Comment</Label>
+                    <Input defaultValue={product?.comment} onChange={e => setComment(e.target.value)} />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="new">Description</Label>
+                    <Textarea defaultValue={product?.description} onChange={e => setDescription(e.target.value)} />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button onClick={() => updateProduct(extractProductUpdateInterface(product))}>Sauvegarder</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </>
+        )
+      },
+    },
+  ]
+  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  )
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({})
+  const [rowSelection, setRowSelection] = React.useState({});
+
+
+  const table = useReactTable<Product>({
+    data: products,
+    columns: columns,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    state: {
+      sorting,
+      columnFilters,
+      columnVisibility,
+      rowSelection,
+    },
+  })
+
   return (
-        <Card className='overflow-y-auto max-h-[600px]'>
-          <CardHeader className="px-7">
-            <CardDescription className="text-center">Gerez les produits ici</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Produit</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Stock</TableHead>
-                  <TableHead>Prix</TableHead>
-                  <TableHead>Promotion en %</TableHead>
-                  <TableHead>Note</TableHead>
-                  <TableHead></TableHead>
+    <div className="w-full">
+      <div className="flex items-center py-4">
+        <Input
+          placeholder="Filtrez les produits..."
+          value={(table.getColumn("product_name")?.getFilterValue() as string) ?? ""}
+          onChange={(event) =>
+            table.getColumn("product_name")?.setFilterValue(event.target.value)
+          }
+          className="max-w-sm"
+        />
+      </div>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  )
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {products.map((product) => (
-                  <TableRow key={product.id_product}>
-                      <TableCell>
-                        {product.product_name}
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        {product.category}
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        {product.stock}
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        {product.price}€
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell">
-                        {product.discount}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Rating
-                          style={{ maxWidth: 100 }}
-                          value={product.product_note}
-                          readOnly />
-                      </TableCell>
-                      <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button aria-haspopup="true" size="icon" variant="ghost">
-                              <MoreHorizontal className="h-4 w-4" />
-                              <span className="sr-only">Toggle menu</span>
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem className='cursor-pointer' onClick={() => setIsEditDialogOpen(true)}>Modifier</DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-
-                        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                          <DialogContent className="sm:max-w-[500px]">
-                            <DialogHeader>
-                              <DialogTitle>Mise à jour produit</DialogTitle>
-                              <DialogDescription>
-                                Produit : {product.product_name}
-                              </DialogDescription>
-                            </DialogHeader>
-                            <div className="grid gap-4">
-                              <div className="grid grid-cols-3 gap-6">
-                                  <div className="grid gap-2">
-                                      <Label htmlFor="new">Stock</Label>
-                                      <Input type='number' defaultValue={product?.stock} min="0" onChange={e => setStock(Number(e.target.value))} />
-                                  </div>
-                                  <div className="grid gap-2">
-                                      <Label htmlFor="new">Remise en %</Label>
-                                      <Input defaultValue={product?.discount} min="0" max="100" onChange={e => setDiscount(Number(e.target.value))} />
-                                  </div>
-                                  <div className="grid gap-2">
-                                      <Label htmlFor="new">Prix</Label>
-                                      <Input defaultValue={product?.price} min="0" onChange={e => setPrice(Number(e.target.value))} />
-                                  </div>
-                              </div>
-                              <div className="grid gap-2">
-                                  <Label htmlFor="new">Comment</Label>
-                                  <Input defaultValue={product?.comment} onChange={e => setComment(e.target.value)} />
-                              </div>
-                              <div className="grid gap-2">
-                                  <Label htmlFor="new">Description</Label>
-                                  <Textarea defaultValue={product?.description} onChange={e => setDescription(e.target.value)} />
-                              </div>
-                            </div>
-                            <DialogFooter>
-                              <Button onClick={() => updateProduct(extractProductUpdateInterface(product))}>Sauvegarder</Button>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-
-                      </TableCell>
-                    </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  Pas de resultats.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   )
 }
