@@ -1,12 +1,13 @@
 "use client"
+import Profile from "./pages/Profile";
 import LogIn from "./pages/auth/LogIn";
 import SignUp from "./pages/auth/SignUp";
-import {RouterProvider,createBrowserRouter } from "react-router-dom";
+import {RouterProvider, createHashRouter } from "react-router-dom";
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path:"/",
-    element:<SignUp/>
+    element:<Profile/>
   },
   {
     path:"/inscription",
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
   {
     path:"/connexion",
     element:<LogIn/>
+  },
+  {
+    path:"/profil",
+    element:<Profile/>
   }
 ]);
 
