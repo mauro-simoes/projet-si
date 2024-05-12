@@ -2,6 +2,16 @@
 import React, { useEffect, useState } from 'react'
 import { MoreHorizontal } from "lucide-react"
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Rating } from '@smastrom/react-rating'
 import {
   DropdownMenu,
@@ -44,7 +54,7 @@ import {
   getSortedRowModel,
   useReactTable
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown } from "lucide-react"
+import { ArrowUpDown} from "lucide-react"
 
 
 export default function ProductManagement() {
@@ -53,10 +63,14 @@ export default function ProductManagement() {
   const [price, setPrice] = useState(0);
   const [comment, setComment] = useState("");
   const [description, setDescription] = useState("");
+  const [product_name, setProductName] = useState("");
+  const [category, setCategory] = useState("");
 
   const [token,setToken] = useState("");
   const [products,setProducts] = useState([{} as Product]);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
 
   const extractProductUpdateInterface = (product: Product) => {
     return {
@@ -129,9 +143,7 @@ export default function ProductManagement() {
       header: () => <div>Prix</div>,
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("price"))
-  
-        // Format the amount as a dollar amount
-        const formatted = new Intl.NumberFormat("en-GB", {
+        const formatted = new Intl.NumberFormat("fr", {
           style: "currency",
           currency: "EUR",
         }).format(amount)
@@ -140,7 +152,7 @@ export default function ProductManagement() {
       },
     },
     {
-      accessorKey: "Note",
+      accessorKey: "product_note",
       accessorFn:(row) => row.product_note,
       header: () => <div >Note</div>,
       cell: ({ row }) => {
@@ -167,9 +179,13 @@ export default function ProductManagement() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuItem className='cursor-pointer' onClick={() => setIsAlertDialogOpen(true)}>Supprimer</DropdownMenuItem>
               <DropdownMenuItem className='cursor-pointer' onClick={() => setIsEditDialogOpen(true)}>Modifier</DropdownMenuItem>
             </DropdownMenuContent>
-            </DropdownMenu><Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            </DropdownMenu>
+            
+
+            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
               <DialogContent className="sm:max-w-[500px]">
                 <DialogHeader>
                   <DialogTitle>Mise à jour produit</DialogTitle>
@@ -180,24 +196,24 @@ export default function ProductManagement() {
                 <div className="grid gap-4">
                   <div className="grid grid-cols-3 gap-6">
                     <div className="grid gap-2">
-                      <Label htmlFor="new">Stock</Label>
+                      <Label>Stock</Label>
                       <Input type='number' defaultValue={product?.stock} min="0" onChange={e => setStock(Number(e.target.value))} />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="new">Remise en %</Label>
+                      <Label>Remise en %</Label>
                       <Input defaultValue={product?.discount} min="0" max="100" onChange={e => setDiscount(Number(e.target.value))} />
                     </div>
                     <div className="grid gap-2">
-                      <Label htmlFor="new">Prix</Label>
+                      <Label>Prix</Label>
                       <Input defaultValue={product?.price} min="0" onChange={e => setPrice(Number(e.target.value))} />
                     </div>
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="new">Comment</Label>
-                    <Input defaultValue={product?.comment} onChange={e => setComment(e.target.value)} />
+                    <Label>Comment</Label>
+                    <Input value={product?.comment} disabled={true} />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="new">Description</Label>
+                    <Label>Description</Label>
                     <Textarea defaultValue={product?.description} onChange={e => setDescription(e.target.value)} />
                   </div>
                 </div>
@@ -206,6 +222,22 @@ export default function ProductManagement() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
+
+
+            <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Ètes vous sur de vouloir supprimer le produit : {product.product_name}?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Cette aciton ne peut pas être annulée.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction>Confirmer</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </>
         )
       },

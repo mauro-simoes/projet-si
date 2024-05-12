@@ -8,3 +8,13 @@ export const ACCOUNT_STATUSES :{ [key:string]:string; } = {
     VALIDE:"Validé",
     RADIE:"Radié"
 }
+
+export const CATEGORIES : string[] = [
+    "Caméras", 
+    "Appareil photo", 
+    "Microphone", 
+    "Pied d'éclairage", 
+    "Carte mémoire",
+    "Moniteurs",
+    "Streamers"
+]
