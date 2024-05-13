@@ -156,10 +156,7 @@ export default function ProductManagement() {
       accessorFn:(row) => row.product_note,
       header: () => <div >Note</div>,
       cell: ({ row }) => {
-        return <Rating
-        style={{ maxWidth: 100 }}
-        value={row.getValue("product_note")}
-        readOnly />
+        return <div className="font-medium">{row.getValue("product_note")} /10</div>
       },
     },
     {

@@ -61,7 +61,7 @@ export const allProductsMockData = [
         discount: 20,
         price: 1999.99,
         description: "Camera 4k - 500 GB",
-        product_note: 3.5,
+        product_note: 4.5,
         comment: "Comment"
     },
     {
@@ -72,7 +72,7 @@ export const allProductsMockData = [
         discount: 0,
         price: 1750.99,
         description: "Mixer Pioneer",
-        product_note: 5,
+        product_note: 9,
         comment: "Comment"
     },
 ] as Product[]
