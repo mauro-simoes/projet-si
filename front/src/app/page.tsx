@@ -5,7 +5,7 @@ import SignUp from "./pages/auth/SignUp";
 import Accueil from "./pages/Accueil";
 import Produits from "./pages/Produit";
 import {RouterProvider, createHashRouter } from "react-router-dom";
-import Management from "./pages/Management";
+import Management from "./pages/management/Management";
 
 const router = createHashRouter([
   {
