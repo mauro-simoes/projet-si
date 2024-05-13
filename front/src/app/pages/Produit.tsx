@@ -8,7 +8,6 @@ import {
   MenubarShortcut,
   MenubarTrigger,
 } from "@/components/ui/menubar"
-
 import {
   Card,
   CardContent,
@@ -17,18 +16,12 @@ import {
   CardFooter
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button";
+import { getProduits } from '../services/ProduitService';
 
-const categories = [
-  { title: "Caméra", img: '/camera.jpg'},
-  { title: "Appareil Photo", img: '/appareil-photo.jpg'},
-  { title: "Microphone", img: '/microphone.jpg'},
-  { title: "Pied d'éclairage", img: '/pied-eclairage.png'},
-  { title: "Carte mémoire", img: '/carte-memoire.jpg'},
-  { title: "Moniteurs", img: '/moniteur.jpg'},
-  { title: "Streamers", img: '/streamer.jpg'}
-];
+export default function Produits() {
 
-export default function Accueil() {
+  const produits = getProduits();
+
   return (
     <React.Fragment>
     <Menubar className="bg-orange-800 text-white fixed top-0 w-full px-5 py-3">
@@ -47,22 +40,21 @@ export default function Accueil() {
       </div>
     </Menubar>
 
-
     <div className="home-page h-full">
-      <h1 className="text-3xl font-bold underline text-center my-10">Découvrez nos catégories</h1>
+      <h1 className="text-3xl font-bold underline text-center my-10">Découvrez nos produits</h1>
       <div className="flex flex-wrap justify-center gap-15 p-10">
-        {categories.map((category) => (
-          <div key={category.title} className="w-60 p-5">
-            <Card className="h-30">
+        {produits.map((produit) => (
+          <div key={produit.productName} className="w-60 p-3">
+            <Card className="h-90 w-110">
               <CardHeader>
-                <CardTitle>{category.title}</CardTitle>
+                <CardTitle>{produit.productName}</CardTitle>
               </CardHeader>
               <CardContent>
-                  <img src={category.img} className="w-full h-auto" alt="img non trouvé"/>
+                  <img src={produit.img} className="w-full h-auto" alt="img non trouvé"/>
               </CardContent>
               <CardFooter>
                 <Button className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded">
-                  Découvrir.. 
+                  Découvrir le produit..
                 </Button>
               </CardFooter>
             </Card>

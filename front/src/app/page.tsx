@@ -3,13 +3,14 @@ import Profile from "./pages/user/Profile";
 import LogIn from "./pages/auth/LogIn";
 import SignUp from "./pages/auth/SignUp";
 import Accueil from "./pages/Accueil";
+import Produits from "./pages/Produit";
 import {RouterProvider, createHashRouter } from "react-router-dom";
 import Management from "./pages/Management";
 
 const router = createHashRouter([
   {
     path:"/",
-    element:<Accueil/>
+    element:<Produits/>
   },
   {
     path:"/inscription",
@@ -22,6 +23,10 @@ const router = createHashRouter([
   {
     path:"/profil",
     element:<Profile/>
+  },
+  {
+    path:"/accueil",
+    element:<Accueil/>
   },
   {
     path:"/gestion",
