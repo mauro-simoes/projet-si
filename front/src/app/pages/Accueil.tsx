@@ -1,30 +1,38 @@
 import React from 'react';
 import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarTrigger,
-} from "@/components/ui/menubar"
-import { getCategories } from '../services/CategorieService';
-import { Link } from 'react-router-dom';
-import {
   Card,
   CardContent,
   CardTitle,
   CardHeader,
   CardFooter
 } from "@/components/ui/card"
-import Categories from '../core/Categorie';
-import Header from '../core/Header';
+import { getCategories } from '../services/CategorieService';
+import { Link } from 'react-router-dom';
 
 
 export default function Accueil() {
 
+  const categories = getCategories();
+
   return (
-    <React.Fragment>
-    <Header />
-    <Categories />
-    </React.Fragment>
+    <div className="home-page h-full mt-20">
+      <h1 className="text-3xl font-bold underline text-center my-5">Découvrez nos catégories</h1>
+      <div className="flex flex-wrap justify-center gap-15 p-10">
+        {categories.map((category) => (
+          <Link to ={`/categories/${category.id}`}>
+            <div key={category.title} className="w-60 p-5">
+            <Card style={{ height: '300px' }}> 
+                <CardHeader>
+                  <CardTitle>{category.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <img src={category.img} className="w-full" alt="img non trouvé"/>
+                </CardContent>
+              </Card>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 };
