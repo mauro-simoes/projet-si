@@ -10,14 +10,11 @@ import { getProduits } from '../services/ProduitService';
 
 export default function Produits() {
 
-  const produits = getProduits();
-
   return (
-    <React.Fragment>
     <div className="home-page h-full">
-      <h1 className="text-3xl font-bold underline text-center my-10">Découvrez nos produits</h1>
+      <h1 className="text-3xl font-bold text-center my-10">Découvrez nos produits</h1>
       <div className="flex flex-wrap justify-center gap-15 p-10">
-        {produits.map((produit) => (
+        {getProduits().map((produit) => (
           <div key={produit.productName} className="w-60 p-3">
             <Card className="h-90 w-110">
               <CardHeader>
@@ -27,13 +24,12 @@ export default function Produits() {
                   <img src={produit.img} className="w-full h-auto" alt="img non trouvé"/>
               </CardContent>
               <CardFooter>
-                ${produit.price}
+                {produit.price}€
               </CardFooter>
             </Card>
           </div>
         ))}
       </div>
     </div>
-    </React.Fragment>
   );
 };
