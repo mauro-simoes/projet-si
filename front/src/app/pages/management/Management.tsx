@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import UserManagement from './UserManagment'
 import ProductManagement from './ProductsManagement';
 import Header from '@/app/core/Header';
+import Footer from '@/app/core/Footer';
 
 
 export default function Management() {
@@ -32,6 +33,8 @@ export default function Management() {
           <UserManagement />
         </TabsContent>
       </Tabs>
+
+      <Footer/>
     </>
   )
 }

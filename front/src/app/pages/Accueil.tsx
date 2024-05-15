@@ -8,6 +8,7 @@ import {
 import { Link } from 'react-router-dom';
 import Header from '../core/Header';
 import { CATEGORIES } from '../core/constants';
+import Footer from '../core/Footer';
 
 
 export default function Accueil() {
@@ -33,6 +34,8 @@ export default function Accueil() {
           </Link>
         ))}
       </div>
-    </div></>
+    </div>
+    <Footer/>
+    </>
   );
 };

@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input';
 import Header from '../core/Header';
 import { getBasketInfo, placeOrder } from '../services/product/OrderService';
 import { Product } from '../models/product/ProductModels';
+import Footer from '../core/Footer';
 
 export default function Panier() {
 
@@ -186,7 +187,7 @@ export default function Panier() {
           <Button onClick={() => order()}>Payer</Button>
         </div>
       </Card>
-      
+      <Footer/>
     </>
     
   );

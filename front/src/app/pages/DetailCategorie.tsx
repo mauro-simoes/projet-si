@@ -18,6 +18,7 @@ import { CATEGORIES, PANIER, ROLE, TOKEN } from '../core/constants';
 import { getUserInfo } from '../services/user/UserService';
 import Header from '../core/Header';
 import { Purchase } from '../models/product/Order';
+import Footer from '../core/Footer';
 
 function DetailCategorie() {
   
@@ -126,7 +127,6 @@ function DetailCategorie() {
                   </CardHeader>
                   <CardContent>
                     <img src={produit.image} className="w-full h-auto" alt="img non trouvé" />
-                    <span>{produit.description}</span>
                   </CardContent>
                   <CardFooter className='block'>
                     <span>{produit.discount > 0 ? (produit.price - (produit.price * produit.discount / 100)) : produit.price }€</span>
@@ -143,6 +143,8 @@ function DetailCategorie() {
             ))}
           </div>
         </div>
+
+        <Footer/>
     </>
   );
   }
