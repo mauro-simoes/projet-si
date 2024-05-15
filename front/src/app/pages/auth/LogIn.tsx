@@ -28,6 +28,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { ROLE, TOKEN } from '@/app/core/constants';
 import { APIResponseModel } from '@/app/models/ApiResponseModel';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
     email: z.string().email("Veuillez entrer un mail valide"),
@@ -48,9 +49,7 @@ export default function LogIn() {
     },[])
 
     const navigate = useNavigate();
-
-    const [errorMessage, setErrorMessage] = useState("");
-
+    
     const extractInterface = (values: z.infer<typeof formSchema>) => {
         return {
             email:values.email,
@@ -64,7 +63,9 @@ export default function LogIn() {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         logIn(extractInterface(values))
-        .catch(error => console.log("error",error))
+        .catch(error => {
+            toast.error("Echec de la connexion : " + error.response.data.message);
+        })
         .then(authResponse => {
             if(authResponse != null && authResponse.data != null){
                 handleToken(authResponse.data);
@@ -120,13 +121,12 @@ export default function LogIn() {
                                     )}
                                 />
                             </div>
-                            {errorMessage != "" && <span className='text-center text-red-600'>errorMessage</span>}
                             <Button type="submit" className="w-full">Connexion</Button>
                         </div>
                     </form>
                     <div className="mt-4 text-center text-sm">
                         Vous n'avez pas de compte ?{" "}
-                        <Link to="/" className="underline">Inscrivez-vous</Link>
+                        <Link to="/inscription" className="underline">Inscrivez-vous</Link>
                     </div>
                 </Form>
             </CardContent>

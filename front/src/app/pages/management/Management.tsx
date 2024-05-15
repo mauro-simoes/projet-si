@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import UserManagement from './UserManagment'
 import ProductManagement from './ProductsManagement';
+import Header from '@/app/core/Header';
 
 
 export default function Management() {
@@ -17,17 +18,20 @@ export default function Management() {
   },[]);
 
   return (
-    <Tabs defaultValue="produits" className="mx-auto w-[1000px]">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="produits">Produits</TabsTrigger>
-        <TabsTrigger value="utilisateurs">Utilisateurs</TabsTrigger>
-      </TabsList>
-      <TabsContent value="produits">
-        <ProductManagement />
-      </TabsContent>
-      <TabsContent value="utilisateurs">
-        <UserManagement />
-      </TabsContent>
-    </Tabs>
+    <>
+      <Header />
+      <Tabs defaultValue="produits" className="mx-auto w-[1000px]">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="produits">Produits</TabsTrigger>
+          <TabsTrigger value="utilisateurs">Utilisateurs</TabsTrigger>
+        </TabsList>
+        <TabsContent value="produits">
+          <ProductManagement />
+        </TabsContent>
+        <TabsContent value="utilisateurs">
+          <UserManagement />
+        </TabsContent>
+      </Tabs>
+    </>
   )
 }

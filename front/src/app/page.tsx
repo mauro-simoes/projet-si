@@ -32,6 +32,10 @@ const router = createHashRouter([
   {
     path:"/categories/:categorieId",
     element: <DetailCategorie/>
+  },
+  {
+    path:"/accueil",
+    element: <Accueil/>
   }
 ]);
 

@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { ROLE, TOKEN } from '@/app/core/constants';
+import { toast } from 'sonner';
 const formSchema = z.object({
     nom: z.string().min(1,"Veuillez entrer votre nom"),
     prenom: z.string().min(1,"Veuillez entrer votre prenom"),
@@ -69,7 +70,9 @@ export default function SignUp() {
 
     function onSubmit(values: z.infer<typeof formSchema>) {
         signUp(extractInterface(values))
-        .catch(error => console.log("error",error))
+        .catch(error => {
+            toast.error("Echec de l'inscription",  error.response.data.message);
+        })
         .then(authResponse => {
             if(authResponse != null && authResponse.data != null){
                 handleToken(authResponse.data);

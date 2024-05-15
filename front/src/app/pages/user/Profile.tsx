@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import  {Link } from "react-router-dom";
+import  {Link, useNavigate } from "react-router-dom";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -17,18 +17,23 @@ import { getUserInfo, updateUserPassword, updateUserProfile } from '../../servic
 import { PasswordChangeRequest, User } from '../../models/user/UserModels';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { TOKEN } from '@/app/core/constants';
+import Header from '@/app/core/Header';
 
 export default function Profile() {
 
+    const navigator = useNavigate();
+
     const extractUserUpdateInterface = () => {
         return {
-            email: email,
-            prenom: user.prenom,
-            nom: user.nom,
-            adresse: adresse,
+            id:user.id,
+            mail: user.mail,
+            firstName: prenom == "" ? user.firstName : prenom,
+            lastName: nom == "" ? user.lastName : nom,
+            address: adresse == "" ? user.address : adresse,
             note: user.note,
-            avatar: avatar,
-            status : user.status
+            avatar: avatar == "" ? user.avatar : avatar,
+            accountStatus : user.accountStatus
         } as User
     }
 
@@ -44,31 +49,41 @@ export default function Profile() {
         }
     }
 
-    const [motDePasseActuel,setMotDePasseActuel] = useState("");
-    const [nouveauMotDePasse,setNouveauMotDePasse] = useState("");
+    const [currentPassword,setMotDePasseActuel] = useState("");
+    const [newPassword,setNouveauMotDePasse] = useState("");
 
-    const [token,setToken] = useState("");
     const [user,setUser] = useState({} as User);
     const [adresse,setAdresse] = useState("");
-    const [email,setEmail] = useState("");
+    const [prenom,setPrenom] = useState("");
+    const [nom,setNom] = useState("");
     const [avatar,setAvatar] = useState("");
 
     useEffect(() => {
-        let tokenLocalStorage = localStorage.getItem("token");
-        if(tokenLocalStorage == null){
-            console.log("token is null");
-            setToken("token");
+        let token = localStorage.getItem(TOKEN);
+        if(token == null){
+            navigator("/acceuil",{replace:true});
+            return;
+        }else{
+            getUserInfo(token)
+            .then(response => {
+                if(response.data != null){
+                    setUser(response.data);
+                    if(response.data.avatar == null || response.data.avatar == ""){
+                        setAvatar("blank-profile.jpeg");
+                    }else{
+                        setAvatar(response.data.avatar);
+                    }
+                }
+            })
         }
-        console.log("token not null");
-        getUserInfo(token)
-        .then(data => {
-            setUser(data);
-            setAvatar(data.avatar);
-        })
     },[]);
 
     function updateProfile() {
-        if(user.email != email || user.adresse != adresse || user.avatar != avatar){
+        let token = localStorage.getItem(TOKEN);
+        if(token == null){
+            navigator("/acceuil",{replace:true});
+            return;
+        }else{
             updateUserProfile(extractUserUpdateInterface(), token)
             .then(data => {
                 if(data){
@@ -77,27 +92,35 @@ export default function Profile() {
                     toast.error("Echec de la mise à jour");
                 }
             }).catch(error => {
-                toast.error("Echec de la mise à jour", error);
+                toast.error("Echec de la mise à jour : " + error.response.data.message);
             });
         }
     }
 
     function updatePassword() {
-        updateUserPassword({motDePasseActuel, nouveauMotDePasse} as PasswordChangeRequest, token)
-        .then(data => {
-            if(data){
-                toast.success("Mot de passe mis à jour avec succes");
-            }else{
-                toast.error("Echec de la mise à jour");
-            }
-        }).catch(error => {
-            toast.error("Echec de la mise à jour", error);
-        });
+        let token = localStorage.getItem(TOKEN);
+        if(token == null){
+            navigator("/acceuil",{replace:true});
+            return;
+        }else{
+            updateUserPassword({currentPassword, newPassword} as PasswordChangeRequest, token)
+            .then(data => {
+                if(data){
+                    toast.success("Mot de passe mis à jour avec succes");
+                }else{
+                    toast.error("Echec de la mise à jour");
+                }
+            }).catch(error => {
+                toast.error("Echec de la mise à jour : " + error.response.data.message);
+            });
+        }
     }
 
-    console.log(avatar);
-
     return (
+        <>
+        
+        <Header/>
+        
         <Tabs defaultValue="account" className="mx-auto w-[600px]">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="account">Profil</TabsTrigger>
@@ -121,20 +144,20 @@ export default function Profile() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="new">Nom</Label>
-                                <Input disabled={true} value={user?.nom}  />
+                                <Input defaultValue={user?.lastName} onChange={e => setNom(e.target.value)} />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="new">Prenom</Label>
-                                <Input disabled={true} value={user?.prenom} />
+                                <Input defaultValue={user?.firstName} onChange={e => setPrenom(e.target.value)} />
                             </div>
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="new">Email</Label>
-                            <Input defaultValue={user?.email} onChange={e => setEmail(e.target.value)} />
+                            <Input defaultValue={user?.mail} disabled={true} />
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="new">Adresse</Label>
-                            <Input defaultValue={user?.adresse} onChange={e => setAdresse(e.target.value)} />
+                            <Input defaultValue={user?.address} onChange={e => setAdresse(e.target.value)} />
                         </div>
                     </div>
                 </CardContent>
@@ -166,5 +189,9 @@ export default function Profile() {
             </Card>
           </TabsContent>
         </Tabs>
+        
+        
+        </>
+    
     );
 }

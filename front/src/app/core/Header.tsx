@@ -27,6 +27,12 @@ export default function Header(){
     }
   })
 
+  function logOut(){
+    localStorage.removeItem(TOKEN);
+    localStorage.removeItem(ROLE);
+    navigate("/connexion",{replace: true});
+  }
+
   return(
     <Menubar className="bg-orange-500 text-white fixed top-0 w-full h-30 px-5 py-3">
         <div className="flex items-center justify-between w-full">
@@ -41,13 +47,13 @@ export default function Header(){
                   <>
                     <div className="ml-auto flex items-center space-x-4">
                       <Link to="/"><img src="shopping-bag.svg" alt="Panier" /></Link>
-                      <MenubarTrigger className="px-3 py-2">
+                      <MenubarTrigger className="px-3 py-2 cursor-pointer">
                         <img src="profile.svg" alt="Profil" />
                       </MenubarTrigger>
                     </div>
                     <MenubarContent>
-                        <Link to="/profil"><MenubarItem className="px-3 py-2">Profil</MenubarItem></Link>
-                        <Link to="/"><MenubarItem className="px-3 py-2">Déconnexion</MenubarItem></Link>
+                        <Link to="/profil"><MenubarItem className="px-3 py-2 cursor-pointer">Profil</MenubarItem></Link>
+                        <Link to="/"><MenubarItem className="px-3 py-2 cursor-pointer" onClick={() => logOut()}>Déconnexion</MenubarItem></Link>
                     </MenubarContent>
                   </> 
               }
@@ -56,6 +62,12 @@ export default function Header(){
                 <>
                   <Button variant="secondary" className="mx-8" onClick={() => navigate("/inscription",{replace:true})}>Inscription</Button>
                   <Button variant="secondary" onClick={() => navigate("/connexion",{replace:true})}>Connexion</Button>
+                </>
+              }
+              {
+                userLoggedIn && userIsAdmin &&
+                <>
+                  <Button variant="secondary" className="mx-8" onClick={() => logOut()}>Deconnexion</Button>
                 </>
               }
             </div>

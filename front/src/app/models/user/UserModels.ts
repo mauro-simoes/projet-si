@@ -1,20 +1,21 @@
 export interface User {
-    userId: number,
-    email: string,
-    prenom: string,
-    nom: string,
-    adresse: string,
+    id: number,
+    mail: string,
+    firstName: string,
+    lastName: string,
+    address: string,
+    password: string
     avatar: string,
     note: number,
-    status: string
+    accountStatus: string
 }
 
 export interface PasswordChangeRequest {
-    motDePasseActuel: string
-    nouveauMotDePasse : string
+    currentPassword: string
+    newPassword : string
 }
 
 export interface AdminPasswordChangeRequest {
-    userId: number
-    motDePasse : string
+    id: number
+    newPassword : string
 }
