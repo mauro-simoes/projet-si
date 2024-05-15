@@ -49,7 +49,7 @@ function DetailCategorie() {
         loadData(categoryObj.title);
       }
     }else{
-      navigate("/acceuil",{replace:true});
+      navigate("/accueil",{replace:true});
     }
 
     let localToken = localStorage.getItem(TOKEN);

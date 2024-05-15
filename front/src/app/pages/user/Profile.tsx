@@ -51,6 +51,7 @@ export default function Profile() {
 
     const [currentPassword,setMotDePasseActuel] = useState("");
     const [newPassword,setNouveauMotDePasse] = useState("");
+    const [note, setNote] = useState<string | undefined>();
 
     const [user,setUser] = useState({} as User);
     const [adresse,setAdresse] = useState("");
@@ -61,7 +62,7 @@ export default function Profile() {
     useEffect(() => {
         let token = localStorage.getItem(TOKEN);
         if(token == null){
-            navigator("/acceuil",{replace:true});
+            navigator("/accueil",{replace:true});
             return;
         }else{
             getUserInfo(token)
@@ -83,7 +84,7 @@ export default function Profile() {
     function updateProfile() {
         let token = localStorage.getItem(TOKEN);
         if(token == null){
-            navigator("/acceuil",{replace:true});
+            navigator("/accueil",{replace:true});
             return;
         }else{
             updateUserProfile(extractUserUpdateInterface(), token)
@@ -102,7 +103,7 @@ export default function Profile() {
     function updatePassword() {
         let token = localStorage.getItem(TOKEN);
         if(token == null){
-            navigator("/acceuil",{replace:true});
+            navigator("/accueil",{replace:true});
             return;
         }else{
             updateUserPassword({currentPassword, newPassword} as PasswordChangeRequest, token)
@@ -127,6 +128,7 @@ export default function Profile() {
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="account">Profil</TabsTrigger>
             <TabsTrigger value="password">Mot de passe</TabsTrigger>
+            <TabsTrigger value="retours">Retours</TabsTrigger>
           </TabsList>
           <TabsContent value="account">
             <Card>
@@ -188,6 +190,34 @@ export default function Profile() {
               <CardFooter>
                 <Button className='mx-auto' onClick={() => updatePassword()}>Sauvegarder</Button>
               </CardFooter>
+            </Card>
+          </TabsContent>
+          <TabsContent value="retours">
+            <Card>
+                <CardHeader className='items-center'>
+                    <CardDescription>
+                        Donnez vos impressions sur l'entreprise !
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="new">Note</Label>
+                            <Input id="note" defaultValue={note} onChange={(e) => setNote(e.target.value)}/>
+                        </div>
+                        <div className="grid gap-2">    
+                            <Label htmlFor="new">Email</Label>
+                            {/* <Input id="email" type="email"defaultValue={user?.mail} placeholder="Entrer votre mail" disabled={true} /> */}
+                            <label htmlFor="subject">Sujet du Mail</label>
+                            <Input id="subject" type="text" defaultValue="" placeholder="Ecrivez votre mail"/>
+                        </div>
+                    </div>
+                </CardContent>
+                <CardFooter>
+                    <a href={`mailto:'videoson@gmail.com'}`} className="text-orange-600 hover:underline">
+                    Envoyer mail
+                    </a>
+                </CardFooter>
             </Card>
           </TabsContent>
         </Tabs>

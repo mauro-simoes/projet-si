@@ -12,7 +12,7 @@ import React from "react";
 const router = createHashRouter([
   {
     path:"/",
-    element:<Accueil/>
+    element:<Profile/>
   },
   {
     path:"/inscription",
@@ -41,7 +41,7 @@ const router = createHashRouter([
   {
   path:"/panier",
   element: <Panier/>
-}
+  }
 ]);
 
 export default function Home() {
