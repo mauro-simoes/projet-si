@@ -61,7 +61,7 @@ export default function Profile() {
     useEffect(() => {
         let token = localStorage.getItem(TOKEN);
         if(token == null){
-            navigator("/acceuil",{replace:true});
+            navigator("/accueil",{replace:true});
             return;
         }else{
             getUserInfo(token)
@@ -83,7 +83,7 @@ export default function Profile() {
     function updateProfile() {
         let token = localStorage.getItem(TOKEN);
         if(token == null){
-            navigator("/acceuil",{replace:true});
+            navigator("/accueil",{replace:true});
             return;
         }else{
             updateUserProfile(extractUserUpdateInterface(), token)
@@ -102,7 +102,7 @@ export default function Profile() {
     function updatePassword() {
         let token = localStorage.getItem(TOKEN);
         if(token == null){
-            navigator("/acceuil",{replace:true});
+            navigator("/accueil",{replace:true});
             return;
         }else{
             updateUserPassword({currentPassword, newPassword} as PasswordChangeRequest, token)

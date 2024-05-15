@@ -7,11 +7,12 @@ import {RouterProvider, createHashRouter } from "react-router-dom";
 import Management from "./pages/management/Management";
 import DetailCategorie from "./pages/DetailCategorie";
 import React from "react";
+import Orders from "./pages/user/Orders";
 
 const router = createHashRouter([
   {
     path:"/",
-    element:<Accueil/>
+    element:<Orders/>
   },
   {
     path:"/inscription",
@@ -36,6 +37,10 @@ const router = createHashRouter([
   {
     path:"/accueil",
     element: <Accueil/>
+  },
+  {
+    path:"/commandes",
+    element: <Orders/>
   }
 ]);
 

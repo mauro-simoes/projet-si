@@ -187,13 +187,13 @@ export default function ProductManagement() {
   useEffect(() => {
       let localToken = localStorage.getItem(TOKEN)
       if( localToken == null){
-        navigator("/acceuil",{replace:true});
+        navigator("/accueil",{replace:true});
       }else{
         setToken(localToken);
       }
       let role = localStorage.getItem(ROLE);
       if(role == null || role != "ADMIN"){
-        navigator("/acceuil",{replace:true});
+        navigator("/accueil",{replace:true});
       }
   },[]);
 

@@ -54,7 +54,7 @@ export default function UserManagement() {
   function approveAccount(id :number){
     let tokenLocalStorage = localStorage.getItem(TOKEN);
     if(tokenLocalStorage == null){
-      navigator("/acceuil",{replace:true});
+      navigator("/accueil",{replace:true});
     }else{
       approveUserAccount(id, tokenLocalStorage).
       then(data => {
@@ -74,7 +74,7 @@ export default function UserManagement() {
   function suspendAccount(id :number){
     let tokenLocalStorage = localStorage.getItem(TOKEN);
     if(tokenLocalStorage == null){
-      navigator("/acceuil",{replace:true});
+      navigator("/accueil",{replace:true});
     }else{
       suspendUserAccount(id, tokenLocalStorage).
       then(data => {
@@ -94,7 +94,7 @@ export default function UserManagement() {
   function changePassword(id :number, newPassword: string){
     let tokenLocalStorage = localStorage.getItem(TOKEN);
     if(tokenLocalStorage == null){
-      navigator("/acceuil",{replace:true});
+      navigator("/accueil",{replace:true});
     }else{
       changeUserPasswordAsAdmin({id, newPassword} as AdminPasswordChangeRequest, tokenLocalStorage).
       then(data => {
@@ -126,7 +126,7 @@ export default function UserManagement() {
   useEffect(() => {
       let tokenLocalStorage = localStorage.getItem(TOKEN);
       if(tokenLocalStorage == null){
-        navigator("/acceuil",{replace:true});
+        navigator("/accueil",{replace:true});
       }else{
         loadData(tokenLocalStorage);
       }

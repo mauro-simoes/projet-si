@@ -10,22 +10,37 @@ import { useEffect, useState } from "react";
 import { ROLE, TOKEN } from "./constants";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { User } from "../models/user/UserModels";
+import { getUserInfo } from "../services/user/UserService";
+import { toast } from "sonner";
+import { Avatar } from "@/components/ui/avatar";
+import { AvatarImage } from "@radix-ui/react-avatar";
 
 export default function Header(){
 
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [userIsAdmin, setUserIsAdmin] = useState(false);
+  const [user,setUser] = useState<User>();
 
   const navigate = useNavigate();
   
   useEffect(() =>{
-    if(localStorage.getItem(TOKEN) != null){
+    let localToken = localStorage.getItem(TOKEN);
+    if(localToken != null){
       setUserLoggedIn(true);
+      getUserInfo(localToken)
+      .then(response => {
+          if(response.data != null){
+            setUser(response.data);
+          }
+      }).catch(error => {
+          toast.error("Echec de la recuperation de vos informations: " + error.response.data.message);
+      });
     }
     if(localStorage.getItem(ROLE) != null && localStorage.getItem(ROLE) == "ADMIN"){
       setUserIsAdmin(true);
     }
-  })
+  },[])
 
   function logOut(){
     localStorage.removeItem(TOKEN);
@@ -41,10 +56,13 @@ export default function Header(){
               <Link to="/accueil">Accueil</Link>
               {userIsAdmin && <Link to="/gestion">Gestion</Link>}
             </div>
-            <div>
+            <div className="flex space-x-4">
               {
-                userLoggedIn && !userIsAdmin &&
+                userLoggedIn &&
                   <>
+                    <Avatar className="w-[50px] h-[50px]">
+                        <AvatarImage src={user?.avatar == null ? "blank-profile.jpeg" : user?.avatar} />
+                    </Avatar>
                     <div className="ml-auto flex items-center space-x-4">
                       <Link to="/"><img src="shopping-bag.svg" alt="Panier" /></Link>
                       <MenubarTrigger className="px-3 py-2 cursor-pointer">
@@ -53,7 +71,8 @@ export default function Header(){
                     </div>
                     <MenubarContent>
                         <Link to="/profil"><MenubarItem className="px-3 py-2 cursor-pointer">Profil</MenubarItem></Link>
-                        <Link to="/"><MenubarItem className="px-3 py-2 cursor-pointer" onClick={() => logOut()}>Déconnexion</MenubarItem></Link>
+                        {!userIsAdmin && <Link to="/commandes"><MenubarItem className="px-3 py-2 cursor-pointer">Vos Commandes</MenubarItem></Link>}
+                        <Link to="/connexion"><MenubarItem className="px-3 py-2 cursor-pointer" onClick={() => logOut()}>Déconnexion</MenubarItem></Link>
                     </MenubarContent>
                   </> 
               }
@@ -62,12 +81,6 @@ export default function Header(){
                 <>
                   <Button variant="secondary" className="mx-8" onClick={() => navigate("/inscription",{replace:true})}>Inscription</Button>
                   <Button variant="secondary" onClick={() => navigate("/connexion",{replace:true})}>Connexion</Button>
-                </>
-              }
-              {
-                userLoggedIn && userIsAdmin &&
-                <>
-                  <Button variant="secondary" className="mx-8" onClick={() => logOut()}>Deconnexion</Button>
                 </>
               }
             </div>
