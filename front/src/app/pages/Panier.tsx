@@ -1,6 +1,7 @@
+"use client"
+
 import React, { useEffect } from 'react';
-import { Product } from '../models/product/ProductModels';
-import { CATEGORIES, PANIER, ROLE, TOKEN } from '../core/constants';
+import { PANIER, TOKEN } from '../core/constants';
 import {
   Card,
   CardContent,
@@ -16,35 +17,46 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import {
-  Tabs,
-  TabsContent,
-} from "@/components/ui/tabs"
 import { Button } from '@/components/ui/button';
 import { getProductById } from '../services/product/ProductService';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Purchase } from '../models/product/Order';
+import { Order, Purchase } from '../models/product/Order';
 import { Input } from '@/components/ui/input';
+import Header from '../core/Header';
+import { getBasketInfo, placeOrder } from '../services/product/OrderService';
+import { Product } from '../models/product/ProductModels';
 
-function Panier() {
+export default function Panier() {
 
-  // let total = 0;
-  // function getTotal(){
-  //   getPanier().map((produit) => {
-  //     total += produit.price;
-  //   })
-  //   return total;
-  // }
 
   const navigator = useNavigate();
   const [purchases, setPurchases] = useState<Purchase[]>([]);
   const [token,setToken] = useState("");
   const [total,setTotal] = useState(0);
 
-  function supprimerProduit(productId:string){
+  function supprimerProduit(purchase:Purchase){
+    let purchaseList = purchases;
+    let foundPurchase =  purchaseList.find(element => element.product.id == purchase.product.id);
+    if(foundPurchase != null){
+      const index = purchaseList.indexOf(foundPurchase, 0);
+      if (index > -1) {
+        purchaseList.splice(index, 1);
+      }
+    }
+    let panier = localStorage.getItem(PANIER)
+    if(panier != null){
+      let panierJson = JSON.parse(panier);
+      delete panierJson[purchase.product.id];
+      localStorage.setItem(PANIER,JSON.stringify(panierJson));
+    }
+    setAllPurchases(purchaseList);
+  }
 
+  function removeAll(){
+    localStorage.removeItem(PANIER)
+    setAllPurchases([]);
   }
 
   useEffect(() => {
@@ -52,65 +64,82 @@ function Panier() {
     if( localToken == null){
       navigator("/accueil",{replace:true});
     }else{
-      setToken(localToken);
+      let panier = localStorage.getItem(PANIER)
+      if(panier != null){
+        loadData(panier,localToken);
     }
-    let panier = localStorage.getItem(PANIER)
-    console.log("panier " + panier);
-    if(panier != null){
-      let productIds:string[] = panier.split(",");
-      console.log("productIds " + productIds);
-      productIds.forEach(element => {
-        loadData(element);
-      });
     }
   },[]);
 
-  function calculatePrice(purchase:Purchase){
-    let purchasePrice = 0;
-    if(purchase.product.discount == null || purchase.product.discount == 0){
-      purchasePrice = purchase.quantite * purchase.product.price;
-    }else{
-      purchasePrice = purchase.quantite * (purchase.product.price - (purchase.product.price * purchase.product.discount / 100));
-    }
-    return purchasePrice
-  }
-
-  function loadData(productId:string){
-    getProductById(parseInt(productId))
+  function loadData(basket:string,localToken:string){
+    getBasketInfo(basket,localToken)
       .then(response => {
           if(response.data != null){
-            let purchase = {product: response.data, quantite: 1} as Purchase;
-            purchase.purchasePrice = calculatePrice(purchase);
-            let purchaseList = purchases;
-            if(!purchaseList.includes(purchase)){
-              purchaseList.push(purchase);
-              setPurchases(purchaseList);
-            }          
-          }else{
-            toast.error("Le produit " + productId + " n'a a pas  été trouvé");
+            setAllPurchases(response.data);
         }
     }).catch(error => {
-       toast.error("Le produit " + productId + " n'a a pas  été trouvé : " + error.response.data.message);
+       toast.error("Erreur : " + error.response.data.message);
       });
-    }
-
-  function setQuantity(purchase:Purchase, quantity: string): void {
-    purchase.quantite = parseInt(quantity);
-    setTotal(total + calculatePrice(purchase));
   }
 
-    return (
+  function setAllPurchases(purchaseList:Purchase[]){
+    let totalPrice = 0;
+    purchaseList.forEach(element => {
+      totalPrice += element.purchasePrice;
+    });
+    setTotal(totalPrice);
+    setPurchases(purchaseList);
+  }
 
-      <Tabs defaultValue="all" style={{marginTop:'60px', width:'100%'}}>
-      <TabsContent value="all">
-        <Card x-chunk="dashboard-06-chunk-0">
-          <CardHeader>
-            <CardTitle>Panier</CardTitle>
-            <CardDescription>
-              Gérer votre panier et procéder au paiement !
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+  function order(){
+    let localToken = localStorage.getItem(TOKEN)
+    if( localToken == null){
+      navigator("/accueil",{replace:true});
+    }else{
+      let purchaseList:Purchase[] = [];
+      purchases.forEach(element => {
+        purchaseList.push({quantite:element.quantite, product:{id:element.product.id} as Product} as Purchase)
+      });
+      placeOrder({purchases:purchaseList} as Order,localToken)
+      .then(response => {
+          if(response.data != null){
+            toast.success("La commande est passée ");
+            removeAll();
+        }
+      }).catch(error => {
+        toast.error("Erreur : " + error.response.data.message);
+      });
+    }
+    
+  }
+
+  function setQuantity(purchase :Purchase, value:string){
+    let intValue = parseInt(value);
+    let purchaseList = purchases;
+    let foundPurchase =  purchaseList.find(element => element.product.id == purchase.product.id);
+    if(foundPurchase != null){
+      let purchasePrice = foundPurchase.purchasePrice / foundPurchase.quantite;
+      foundPurchase.quantite = intValue;
+      foundPurchase.purchasePrice = (purchasePrice * intValue);
+    }
+    setAllPurchases(purchaseList);
+  }
+
+
+  return (
+
+      <>
+      
+      <Header />
+      
+      <Card className='overflow-y-auto mx-auto max-h-[600px]'>
+        <CardHeader>
+          <CardTitle>Panier</CardTitle>
+          <CardDescription>
+            Gérer votre panier et procéder au paiement !
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
@@ -131,36 +160,34 @@ function Panier() {
             </TableHeader>
             <TableBody>
               {purchases.map((purchase) => (
-                <TableRow>
-                <TableCell className="hidden sm:table-cell">
-                  {purchase.product.image}
-                </TableCell>
-                <TableCell className="font-medium">
-                  {purchase.product.name}
-                </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  {purchase.product.price} €
-                </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  <Input type="number" onChange={e => setQuantity(purchase,e.target.value)} />
-                </TableCell>
-                <TableCell className="hidden md:table-cell">
-                  <span>Supprimer</span>
-                </TableCell>
-              </TableRow>
+                <TableRow key={purchase.product.id}>
+                  <TableCell className="hidden sm:table-cell">
+                    <img src={purchase.product.image}></img>
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    {purchase.product.name}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {purchase.purchasePrice.toFixed(2)} €
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <Input min="1" type="number" defaultValue={purchase.quantite} onChange={e => setQuantity(purchase, e.target.value)} />
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <Button onClick={() => supprimerProduit(purchase)}>Supprimer</Button>
+                  </TableCell>
+                </TableRow>
               ))}
             </TableBody>
           </Table>
-          </CardContent>
-          <span className="ml-10 mt-5">Total : {total} €</span>
+        </CardContent>
+        <span className="ml-10 mt-5">Total : {total.toFixed(2)} €</span>
         <div className='mb-10 mr-5 flex justify-end'>
-          <Button>Payer</Button>
+          <Button onClick={() => order()}>Payer</Button>
         </div>
-        </Card>
-      </TabsContent>
-    </Tabs>
+      </Card>
+      
+    </>
     
   );
 }
-
-export default Panier;

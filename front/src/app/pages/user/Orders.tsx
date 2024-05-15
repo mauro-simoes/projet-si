@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/table";
 import { useNavigate } from 'react-router-dom'
 import { Order } from '@/app/models/product/Order';
-import { getAllOrders } from '@/app/services/product/OrderSErvice';
+import { getAllOrders } from '@/app/services/product/OrderService';
 import { toast } from 'sonner';
 import { TOKEN } from '@/app/core/constants';
 import { Separator } from '@radix-ui/react-menubar';

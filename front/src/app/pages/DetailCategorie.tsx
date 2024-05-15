@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { CATEGORIES, PANIER, ROLE, TOKEN } from '../core/constants';
 import { getUserInfo } from '../services/user/UserService';
 import Header from '../core/Header';
+import { Purchase } from '../models/product/Order';
 
 function DetailCategorie() {
   
@@ -69,11 +70,13 @@ function DetailCategorie() {
 
   const ajouterAuPanier = (produit : Product) => {
     let panier = localStorage.getItem(PANIER)
-    if(panier != null && !panier.includes(String(produit.id))){
-      panier = panier + "," + produit.id;
-      localStorage.setItem(PANIER, panier);
+    if(panier != null){
+      let parsedPanier = JSON.parse(panier);
+      parsedPanier[produit.id] = 1;
+      localStorage.setItem(PANIER, JSON.stringify(parsedPanier));
     }else{
-      localStorage.setItem(PANIER, String(produit.id));
+      let parsedPanier = "{\"" + produit.id + "\":1}"; 
+      localStorage.setItem(PANIER, JSON.stringify(JSON.parse(parsedPanier)));
     }
   };
 
@@ -123,6 +126,7 @@ function DetailCategorie() {
                   </CardHeader>
                   <CardContent>
                     <img src={produit.image} className="w-full h-auto" alt="img non trouvé" />
+                    <span>{produit.description}</span>
                   </CardContent>
                   <CardFooter className='block'>
                     <span>{produit.discount > 0 ? (produit.price - (produit.price * produit.discount / 100)) : produit.price }€</span>
