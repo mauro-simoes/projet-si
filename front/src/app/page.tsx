@@ -13,7 +13,7 @@ import Orders from "./pages/user/Orders";
 const router = createHashRouter([
   {
     path:"/",
-    element:<Orders/>
+    element:<Accueil/>
   },
   {
     path:"/inscription",

@@ -19,6 +19,8 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { TOKEN } from '@/app/core/constants';
 import Header from '@/app/core/Header';
+import { Textarea } from '@/components/ui/textarea';
+import { addNote } from '@/app/services/NoteService';
 
 export default function Profile() {
 
@@ -51,6 +53,7 @@ export default function Profile() {
 
     const [currentPassword,setMotDePasseActuel] = useState("");
     const [newPassword,setNouveauMotDePasse] = useState("");
+    const [note, setNote] = useState("0");
 
     const [user,setUser] = useState({} as User);
     const [adresse,setAdresse] = useState("");
@@ -99,6 +102,25 @@ export default function Profile() {
         }
     }
 
+    function sendNote() {
+        let token = localStorage.getItem(TOKEN);
+        if(token == null){
+            navigator("/accueil",{replace:true});
+            return;
+        }else{
+            addNote(note, token)
+            .then(data => {
+                if(data){
+                    toast.success("Votre note a ete prise en compte");
+                }else{
+                    toast.error("Echec de la notation");
+                }
+            }).catch(error => {
+                toast.error("Echec de la notation : " + error.response.data.message);
+            });
+        }
+    }
+
     function updatePassword() {
         let token = localStorage.getItem(TOKEN);
         if(token == null){
@@ -123,10 +145,11 @@ export default function Profile() {
         
         <Header/>
         
-        <Tabs defaultValue="account" className="mx-auto w-[600px]">
-          <TabsList className="grid w-full grid-cols-2">
+        <Tabs defaultValue="account" className="mx-auto w-[600px">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="account">Profil</TabsTrigger>
             <TabsTrigger value="password">Mot de passe</TabsTrigger>
+            <TabsTrigger value="retours">Retours</TabsTrigger>
           </TabsList>
           <TabsContent value="account">
             <Card>
@@ -188,6 +211,33 @@ export default function Profile() {
               <CardFooter>
                 <Button className='mx-auto' onClick={() => updatePassword()}>Sauvegarder</Button>
               </CardFooter>
+            </Card>
+          </TabsContent>
+          <TabsContent value="retours">
+            <Card>
+                <CardHeader className='items-center'>
+                    <CardDescription>
+                        Donnez vos impressions sur l'entreprise !
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="grid gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="new">Note</Label>
+                            <Input id="note" type="number" min="0" max="10" defaultValue={note} onChange={(e) => setNote(e.target.value)}/>
+                            <Button className='mx-auto' onClick={() => sendNote()}>Sauvegarder</Button>
+                        </div>
+                        <div className="grid gap-2">    
+                            <Label htmlFor="new">Email</Label>
+                            <Textarea id="subject" defaultValue="" placeholder="Ecrivez votre mail"/>
+                        </div>
+                    </div>
+                </CardContent>
+                <CardFooter>
+                    <a href="mailto:videoson@gmail.com?subject=Retour sur experience" className="mx-auto">
+                    <Button >Envoyer</Button>
+                    </a>
+                </CardFooter>
             </Card>
           </TabsContent>
         </Tabs>

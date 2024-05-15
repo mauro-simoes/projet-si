@@ -143,7 +143,6 @@ export default function UserManagement() {
                 <TableRow>
                   <TableHead>Client</TableHead>
                   <TableHead>Statut</TableHead>
-                  <TableHead >Note</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
@@ -160,9 +159,6 @@ export default function UserManagement() {
                         <Badge className="text-xs" variant={user.accountStatus == RADIE ? "destructive" : "outline"}>
                           {ACCOUNT_STATUSES[user.accountStatus]}
                         </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {user.note == null ? "Non noté" : user.note /10}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>
