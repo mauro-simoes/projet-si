@@ -58,3 +58,24 @@ export async function deleteProduct(productId: number, token: string) :Promise<A
     })
 }
 
+export async function likeProduct(productId: number, token: string) :Promise<APIResponseModel<boolean>> {
+    var url :string = API_URL + "/produit/like/" + productId;
+    return axios.post(url,null,{
+        headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json;charset=UTF-8",
+        "Authorization": `Bearer ${token}`
+        },
+    })
+}
+
+export async function unlikeProduct(productId: number, token: string) :Promise<APIResponseModel<boolean>> {
+    var url :string = API_URL + "/produit/unlike/" + productId;
+    return axios.post(url,null,{
+        headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json;charset=UTF-8",
+        "Authorization": `Bearer ${token}`
+        },
+    })
+}

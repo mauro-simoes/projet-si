@@ -1,6 +1,6 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
-import { getProduits } from '../services/ProduitService';
+import { useNavigate, useParams } from 'react-router-dom';
+
 import {
   Card,
   CardContent,
@@ -8,84 +8,138 @@ import {
   CardHeader,
   CardFooter
 } from "@/components/ui/card"
-import { getCategories } from '../services/CategorieService';
 import { Button } from '@/components/ui/button';
-import { getPanier } from '../services/PanierService';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import { getAllProducts, likeProduct, unlikeProduct } from '../services/product/ProductService';
+import { Product } from '../models/product/ProductModels';
+import { toast } from 'sonner';
+import { CATEGORIES, PANIER, ROLE, TOKEN } from '../core/constants';
+import { getUserInfo } from '../services/user/UserService';
+import Header from '../core/Header';
 
 function DetailCategorie() {
   
   const { categorieId } = useParams();
-  
-  const [panier, setPanier] = useState<Product[]>([]); 
-  const [produits, setProduits] = useState<Product[]>([]); 
-  
-  useEffect(() => {
-    setPanier(getPanier());
-  }, []);
+  const navigate = useNavigate();
+
+  const[category,setCategory] = useState("");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [userLoggedIn,setUserLoggedIn] = useState(false);
+  const [userId,setUserId] = useState(0);
+
+  function loadData(category:string){
+    getAllProducts(category)
+      .then(response => {
+          if(response.data != null)
+            setProducts(response.data);
+          else{
+            toast.error("Il n'y a pas de produits");
+        }
+    }).catch(error => {
+       toast.error("Les produits n'ont pas pu être récupérés : " + error.response.data.message);
+    });
+  }
 
   useEffect(() => {
-    if(categorieId) {
-      const produitsInitiales = getProduits().filter(produit => produit.categorieId === parseInt(categorieId)).map(produit => ({
-        ...produit,
-        isLiked: false,
-        productLike: produit.productLike || 0 
-      }));
-      setProduits(produitsInitiales);
+    if(categorieId != null){
+      let categoryObj = CATEGORIES.find(category => category.id === parseInt(categorieId));
+      if(categoryObj != null){
+        setCategory(categoryObj.title);
+        loadData(categoryObj.title);
+      }
+    }else{
+      navigate("/acceuil",{replace:true});
     }
-  }, [categorieId]);
+
+    let localToken = localStorage.getItem(TOKEN);
+    if(localToken!= null){
+      getUserInfo(localToken)
+      .then(response => {
+        if(response.data != null){
+          setUserId(response.data.id);
+        }
+      })
+      .catch(error => {
+        toast.error("Echec de la mise à jour : " + error.response.data.message);
+      });
+      setUserLoggedIn(true);
+    }
+  },[]);
 
   const ajouterAuPanier = (produit : Product) => {
-    setPanier([...panier, produit]);
+    let panier = localStorage.getItem(PANIER)
+    if(panier != null){
+      panier = panier + "," + produit.id;
+    }else{
+      localStorage.setItem(PANIER, String(produit.id));
+    }
   };
 
-  const toggleLike = (productId : number) => {
-    const newProducts = products.map(product => {
-      if (product.productId === productId) {
-        return {
-          ...product,
-          productLike: product.isLiked ? product.productLike - 1 : product.productLike + 1,
-          isLiked: !product.isLiked
-        };
+  function toggleLike(product:Product){
+    console.log("here", product);
+    let localToken = localStorage.getItem(TOKEN);
+    if(localToken!= null){
+    let productLiked = product.likedBy.find(user => user.id == userId) != null;
+      if(productLiked){
+        unlikeProduct(product.id,localToken)
+        .then(response => {
+          if(response.data){
+            toast.success(product.name + " unliké avec succes");
+          }else{
+            toast.error("Echec du unlike");
+          }
+          loadData(product.category);
+        }).catch(error => {
+          toast.error("Echec du unlike : " + error.response.data.message);
+        });
+      }else{
+        likeProduct(product.id,localToken)
+        .then(response => {
+          if(response.data){
+            toast.success(product.name + " liké avec succes");
+          }else{
+            toast.error("Echec du like");
+          }
+          loadData(product.category);
+        }).catch(error => {
+          toast.error("Echec du like : " + error.response.data.message);
+        });
       }
-      return product;
-    });
-    setProduits(newProducts);
-    console.log(newProducts);
-  };
+    }
+  }
     
-  const products = categorieId ? getProduits().filter(product => product.categorieId === parseInt(categorieId)) : [];
-  const categorie = categorieId ? getCategories().find(category => category.id === parseInt(categorieId)) : null;
-
   return (
-    <div className="home-page h-full mt-20">
-      <h1 className="text-3xl font-bold text-center my-10">Découvrez nos {categorie?.title}</h1>
-      <div className="flex flex-wrap justify-center gap-20 p-10">
-        {products.map((produit) => (
-          <div key={produit.productName} className="w-60 p-5">
-            <Card style={{height:'400px', width:'240px'}}>
-              <CardHeader>
-                <CardTitle>{produit.productName}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                  <img src={produit.img} className="w-full h-auto" alt="img non trouvé"/>
-              </CardContent>
-              <CardFooter className='block'>
-                <span>{produit.price}€</span>
-                <div className="flex justify-end">
-                  <Button className='mt-2' onClick={() => ajouterAuPanier(produit)}>  
-                    Ajouter au panier
-                  </Button>
-                  <img alt="coeur" onClick={() => toggleLike(produit.productId)} className='ml-2' src={produit.isLiked? "heart-red.svg" : "heart.svg"} />
-                  <span className='ml-1.5 mt-2.5'>{produit.productLike}</span>
-                </div>
-              </CardFooter>
-            </Card>
+    <>
+      <Header />
+        <div className="home-page mx-auto mt-20">
+          <h1 className="text-3xl font-bold text-center my-10">Découvrez nos {category}</h1>
+          <div className="flex flex-wrap justify-center gap-20 p-10">
+            {products.map((produit) => (
+              <div key={produit.name} className="w-60 p-5">
+                <Card style={{ height: '400px', width: '240px' }}>
+                  <CardHeader>
+                    <CardTitle>{produit.name}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <img src={produit.image} className="w-full h-auto" alt="img non trouvé" />
+                  </CardContent>
+                  <CardFooter className='block'>
+                    <span>{produit.price}€</span>
+                    <div className="flex justify-end">
+                      <Button className='mt-2' onClick={() => ajouterAuPanier(produit)}>
+                        Ajouter au panier
+                      </Button>
+                      <img alt="coeur" onClick={() => toggleLike(produit)} className='ml-2 cursor-pointer' src={userLoggedIn && produit.likedBy.find(user => user.id == userId) != null ? "heart-red.svg" :"heart.svg" } />
+                      <span className='ml-1.5 mt-2.5'>{produit.nbLikes == null ? 0 : produit.nbLikes}</span>
+                    </div>
+                  </CardFooter>
+                </Card>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-    </div>
+        </div>
+    </>
   );
   }
 

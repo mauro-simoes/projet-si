@@ -128,7 +128,7 @@ export default function ProductManagement() {
             } 
         }
     }
-}
+  }
 
   function createProduct(product: Product): void {
     addProduct(product, token)

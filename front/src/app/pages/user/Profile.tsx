@@ -74,7 +74,9 @@ export default function Profile() {
                         setAvatar(response.data.avatar);
                     }
                 }
-            })
+            }).catch(error => {
+                toast.error("Echec de la recuperation de votre profil: " + error.response.data.message);
+            });
         }
     },[]);
 

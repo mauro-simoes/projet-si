@@ -6,6 +6,7 @@ export const VALIDE = "VALIDE";
 
 export const TOKEN = "videoson_token"
 export const ROLE = "videoson_role"
+export const PANIER = "panier"
 
 export const ACCOUNT_STATUSES :{ [key:string]:string; } = {
     VALIDE:"Validé",

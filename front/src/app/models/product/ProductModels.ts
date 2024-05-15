@@ -11,5 +11,7 @@ export interface Product {
     comment: string,
     image:string,
     addedDate:string,
-    managedBy: User
+    managedBy: User,
+    nbLikes:number,
+    likedBy:User[]
 }
