@@ -12,6 +12,6 @@ export interface Product {
     image:string,
     addedDate:string,
     managedBy: User,
-    nbLikes:number,
+    nbLike:number,
     likedBy:User[]
 }

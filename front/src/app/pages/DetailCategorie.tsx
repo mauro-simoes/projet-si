@@ -69,18 +69,18 @@ function DetailCategorie() {
 
   const ajouterAuPanier = (produit : Product) => {
     let panier = localStorage.getItem(PANIER)
-    if(panier != null){
+    if(panier != null && !panier.includes(String(produit.id))){
       panier = panier + "," + produit.id;
+      localStorage.setItem(PANIER, panier);
     }else{
       localStorage.setItem(PANIER, String(produit.id));
     }
   };
 
-  function toggleLike(product:Product){
-    console.log("here", product);
+  const toggleLike = (product:Product) => {
     let localToken = localStorage.getItem(TOKEN);
-    if(localToken!= null){
-    let productLiked = product.likedBy.find(user => user.id == userId) != null;
+    if(localToken != null){
+      let productLiked = product.likedBy != null && product.likedBy.find(user => user.id == userId) != null;
       if(productLiked){
         unlikeProduct(product.id,localToken)
         .then(response => {
@@ -130,8 +130,8 @@ function DetailCategorie() {
                       <Button className='mt-2' onClick={() => ajouterAuPanier(produit)}>
                         Ajouter au panier
                       </Button>
-                      <img alt="coeur" onClick={() => toggleLike(produit)} className='ml-2 cursor-pointer' src={userLoggedIn && produit.likedBy.find(user => user.id == userId) != null ? "heart-red.svg" :"heart.svg" } />
-                      <span className='ml-1.5 mt-2.5'>{produit.nbLikes == null ? 0 : produit.nbLikes}</span>
+                      <img alt="coeur" onClick={() => toggleLike(produit)} className='ml-2 cursor-pointer' src={userLoggedIn && produit.likedBy?.find(user => user.id == userId) != null ? "heart-red.svg" :"heart.svg" } />
+                      <span className='ml-1.5 mt-2.5'>{produit.nbLike == null ? 0 : produit.nbLike}</span>
                     </div>
                   </CardFooter>
                 </Card>
