@@ -64,7 +64,7 @@ export default function Header(){
                         <AvatarImage src={user?.avatar == null ? "blank-profile.jpeg" : user?.avatar} />
                     </Avatar>
                     <div className="ml-auto flex items-center space-x-4">
-                      <Link to="/"><img src="shopping-bag.svg" alt="Panier" /></Link>
+                      <Link to="/panier"><img src="shopping-bag.svg" alt="Panier" /></Link>
                       <MenubarTrigger className="px-3 py-2 cursor-pointer">
                         <img src="profile.svg" alt="Profil" />
                       </MenubarTrigger>

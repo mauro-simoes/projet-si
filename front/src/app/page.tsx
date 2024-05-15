@@ -6,6 +6,7 @@ import Accueil from "./pages/Accueil";
 import {RouterProvider, createHashRouter } from "react-router-dom";
 import Management from "./pages/management/Management";
 import DetailCategorie from "./pages/DetailCategorie";
+import Panier from "./pages/Panier";
 import React from "react";
 import Orders from "./pages/user/Orders";
 
@@ -41,6 +42,10 @@ const router = createHashRouter([
   {
     path:"/commandes",
     element: <Orders/>
+  },
+  {
+    path:"/panier",
+    element: <Panier/>
   }
 ]);
 
