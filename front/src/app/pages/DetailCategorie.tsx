@@ -125,7 +125,7 @@ function DetailCategorie() {
                     <img src={produit.image} className="w-full h-auto" alt="img non trouvé" />
                   </CardContent>
                   <CardFooter className='block'>
-                    <span>{produit.price}€</span>
+                    <span>{produit.discount > 0 ? (produit.price - (produit.price * produit.discount / 100)) : produit.price }€</span>
                     <div className="flex justify-end">
                       <Button className='mt-2' onClick={() => ajouterAuPanier(produit)}>
                         Ajouter au panier
