@@ -4,7 +4,6 @@ import {
   CardContent,
   CardTitle,
   CardHeader,
-  CardFooter
 } from "@/components/ui/card"
 import { getCategories } from '../services/CategorieService';
 import { Link } from 'react-router-dom';
@@ -19,7 +18,7 @@ export default function Accueil() {
       <h1 className="text-3xl font-bold underline text-center my-5">Découvrez nos catégories</h1>
       <div className="flex flex-wrap justify-center gap-15 p-10">
         {categories.map((category) => (
-          <Link to ={`/categories/${category.id}`}>
+          <Link key={category.id} to ={`/categories/${category.id}`}>
             <div key={category.title} className="w-60 p-5">
             <Card style={{ height: '300px' }}> 
                 <CardHeader>
