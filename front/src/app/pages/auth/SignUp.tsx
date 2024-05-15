@@ -2,7 +2,7 @@
 
 import { AuthResponse, SignUpRequest } from '@/app/models/auth/AuthModels';
 import { signUp } from '@/app/services/auth/AuthServices';
-import React from 'react'
+import React, { useEffect } from 'react'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,7 +16,7 @@ import {
     FormLabel,
     FormMessage,
   } from "@/components/ui/form"
-import  {Link } from "react-router-dom";
+import  {Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -26,6 +26,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { ROLE, TOKEN } from '@/app/core/constants';
+import { sign } from 'crypto';
 
 const formSchema = z.object({
     nom: z.string().min(1,"Veuillez entrer votre nom"),
@@ -45,13 +47,21 @@ const initialState = {
 
 export default function SignUp() {
 
+    useEffect(() =>{
+        if(localStorage.getItem(TOKEN) != null){
+            navigate("/accueil",{replace: true});
+        }
+    },[])
+
+    const navigate = useNavigate();
+
     const extractInterface = (values: z.infer<typeof formSchema>) => {
         return {
             email:values.email,
-            prenom: values.prenom,
-            nom: values.nom,
-            adresse: values.adresse,
-            motDePasse: values.password} as SignUpRequest
+            firstName: values.prenom,
+            lastName: values.nom,
+            address: values.adresse,
+            password: values.password} as SignUpRequest
     }
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -63,14 +73,16 @@ export default function SignUp() {
         signUp(extractInterface(values))
         .catch(error => console.log("error",error))
         .then(authResponse => {
-            if(authResponse != null)
-                handleToken(authResponse);
+            if(authResponse != null && authResponse.data != null){
+                handleToken(authResponse.data);
+                navigate("/accueil",{replace: true});
+            }  
         });
     }
 
     function handleToken(authResponse :AuthResponse){
-        localStorage.setItem("token", authResponse.token);
-        localStorage.setItem("refreshToken", authResponse.refreshToken);
+        localStorage.setItem(TOKEN, authResponse.token);
+        localStorage.setItem(ROLE, authResponse.role);
     }
 
     return (

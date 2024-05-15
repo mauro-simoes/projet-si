@@ -252,9 +252,9 @@ export default function ProductManagement() {
             <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Ètes vous sur de vouloir supprimer le produit : {product.product_name}?</AlertDialogTitle>
+                  <AlertDialogTitle>Êtes vous sur de vouloir supprimer le produit : {product.product_name}?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Cette aciton ne peut pas être annulée.
+                    Cette action ne peut pas être annulée.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

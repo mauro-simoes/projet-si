@@ -2,7 +2,7 @@
 
 import { AuthResponse, LogInRequest } from '@/app/models/auth/AuthModels';
 import { logIn } from '@/app/services/auth/AuthServices';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,7 +16,7 @@ import {
     FormLabel,
     FormMessage,
   } from "@/components/ui/form";
-import  {Link } from "react-router-dom";
+import  {Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -26,6 +26,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { ROLE, TOKEN } from '@/app/core/constants';
+import { APIResponseModel } from '@/app/models/ApiResponseModel';
 
 const formSchema = z.object({
     email: z.string().email("Veuillez entrer un mail valide"),
@@ -39,10 +41,20 @@ const initialState = {
 
 export default function LogIn() {
 
+    useEffect(() =>{
+        if(localStorage.getItem(TOKEN) != null){
+            navigate("/accueil",{replace: true});
+        }
+    },[])
+
+    const navigate = useNavigate();
+
+    const [errorMessage, setErrorMessage] = useState("");
+
     const extractInterface = (values: z.infer<typeof formSchema>) => {
         return {
             email:values.email,
-            motDePasse: values.password} as LogInRequest
+            password: values.password} as LogInRequest
     }
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -54,14 +66,16 @@ export default function LogIn() {
         logIn(extractInterface(values))
         .catch(error => console.log("error",error))
         .then(authResponse => {
-            if(authResponse != null)
-                handleToken(authResponse);
+            if(authResponse != null && authResponse.data != null){
+                handleToken(authResponse.data);
+                navigate("/accueil",{replace: true});
+            }  
         });
     }
 
     function handleToken(authResponse :AuthResponse){
-        localStorage.setItem("token", authResponse.token);
-        localStorage.setItem("refreshToken", authResponse.refreshToken);
+        localStorage.setItem(TOKEN, authResponse.token);
+        localStorage.setItem(ROLE, authResponse.role);
     }
 
     return (
@@ -74,7 +88,7 @@ export default function LogIn() {
             </CardHeader>
             <CardContent>
                 <Form {...form}>
-                    <form method="POST" onSubmit={() => form.handleSubmit(onSubmit)}>
+                    <form method="POST" onSubmit={form.handleSubmit(onSubmit)}>
                         <div className="grid gap-4">
                             <div className="grid gap-2">
                                 <FormField
@@ -106,7 +120,8 @@ export default function LogIn() {
                                     )}
                                 />
                             </div>
-                            <Button type="submit" className="w-full">S'inscrire</Button>
+                            {errorMessage != "" && <span className='text-center text-red-600'>errorMessage</span>}
+                            <Button type="submit" className="w-full">Connexion</Button>
                         </div>
                     </form>
                     <div className="mt-4 text-center text-sm">

@@ -1,18 +1,18 @@
 
 export interface LogInRequest {
     email: string,
-    motDePasse: string
+    password: string
 }
 
 export interface SignUpRequest {
     email: string,
-    prenom: string,
-    nom: string,
-    adresse: string,
-    motDePasse: string
+    firstName: string,
+    lastName: string,
+    address: string,
+    password: string
 }
 
 export interface AuthResponse {
     token: string,
-    refreshToken: string
+    role: string
 }
