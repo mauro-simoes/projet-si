@@ -120,7 +120,7 @@ export default function Orders() {
                                                         <div className="font-semibold">Details commande</div>
                                                         <ul className="grid gap-3">
                                                             {order.purchases.map((purchase) => (
-                                                                <li className="flex items-center justify-between">
+                                                                <li key={purchase.product.id} className="flex items-center justify-between">
                                                                     <span className="text-muted-foreground">
                                                                         {purchase.product.name} x <span>{purchase.quantite}</span>
                                                                     </span>
@@ -132,7 +132,7 @@ export default function Orders() {
                                                         <ul className="grid gap-3">
                                                             <li className="flex items-center justify-between font-semibold">
                                                                 <span className="text-muted-foreground">Total</span>
-                                                                <span>{order.total} €ß</span>
+                                                                <span>{order.total} €</span>
                                                             </li>
                                                         </ul>
                                                     </div>
