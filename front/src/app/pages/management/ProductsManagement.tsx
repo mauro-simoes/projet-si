@@ -138,6 +138,8 @@ export default function ProductManagement() {
           }else{
               toast.error("Echec de l'ajout");
           }
+          setIsCreateDialogOpen(false);
+          loadData(product.category);
       }).catch(error => {
          toast.error("Echec de l'ajout : " + error.response.data.message);
       });
@@ -178,7 +180,7 @@ export default function ProductManagement() {
             toast.error("Il n'y a pas de produits");
         }
     }).catch(error => {
-       toast.error("Les produits n'ont pas pu être récupérés : " + error);
+       toast.error("Les produits n'ont pas pu être récupérés : " + error.response.data.message);
     });
   }
 
@@ -219,7 +221,7 @@ export default function ProductManagement() {
           </Button>
         )
       },
-      cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
+      cell: ({ row }) => <div>{row.getValue("name")}</div>,
     },
     {
       accessorKey: "stock",
@@ -249,6 +251,22 @@ export default function ProductManagement() {
         }).format(amount)
   
         return <div className="font-medium">{formatted}</div>
+      },
+    },
+    {
+      accessorKey: "addedDate",
+      accessorFn:(row) => row.addedDate,
+      header: () => <div >Date d'ajout</div>,
+      cell: ({ row }) => {
+        return <div className="font-medium">{ new Date((row.getValue("addedDate") as string)).toISOString().split('T')[0]}</div>
+      },
+    },
+    {
+      accessorKey: "managedBy",
+      accessorFn:(row) => row.managedBy.mail,
+      header: () => <div >Gestionnaire</div>,
+      cell: ({ row }) => {
+        return <div className="font-medium">{row.getValue("managedBy")}</div>
       },
     },
     {
