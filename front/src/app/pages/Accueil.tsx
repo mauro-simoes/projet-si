@@ -5,33 +5,34 @@ import {
   CardTitle,
   CardHeader,
 } from "@/components/ui/card"
-import { getCategories } from '../services/CategorieService';
 import { Link } from 'react-router-dom';
+import Header from '../core/Header';
+import { CATEGORIES } from '../core/constants';
 
 
 export default function Accueil() {
 
-  const categories = getCategories();
-
   return (
-    <div className="home-page h-full mt-20">
+    <>
+    <Header />
+    <div className="home-page mx-auto mt-20">
       <h1 className="text-3xl font-bold underline text-center my-5">Découvrez nos catégories</h1>
       <div className="flex flex-wrap justify-center gap-15 p-10">
-        {categories.map((category) => (
-          <Link key={category.id} to ={`/categories/${category.id}`}>
-            <div key={category.title} className="w-60 p-5">
-            <Card style={{ height: '300px' }}> 
+        {CATEGORIES.map((category) => (
+          <Link key={category.id} to={`/categories/${category.id}`}>
+            <div className="w-60 p-5">
+              <Card style={{ height: '300px' }} className='hover:opacity-60 duration-700'>
                 <CardHeader>
                   <CardTitle>{category.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <img src={category.img} className="w-full" alt="img non trouvé"/>
+                  <img src={category.img} className="w-full" alt="img non trouvé" />
                 </CardContent>
               </Card>
             </div>
           </Link>
         ))}
       </div>
-    </div>
+    </div></>
   );
 };

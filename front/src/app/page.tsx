@@ -6,7 +6,6 @@ import Accueil from "./pages/Accueil";
 import {RouterProvider, createHashRouter } from "react-router-dom";
 import Management from "./pages/management/Management";
 import DetailCategorie from "./pages/DetailCategorie";
-import Header from "./core/Header";
 import React from "react";
 
 const router = createHashRouter([
@@ -38,14 +37,8 @@ const router = createHashRouter([
 
 export default function Home() {
   return (
-
-    <React.Fragment>
-      <Header />
-        <div className="flex items-center border-2 h-full">
-          <RouterProvider router={router} />
-        </div>
-    </React.Fragment>
-    //Footer div mail au hasard mail support + numtel
-    
+    <div className="flex items-center border-2 h-full">
+      <RouterProvider router={router} />
+    </div>
   );
 }

@@ -1,70 +1,60 @@
 import { API_URL } from '@/app/core/constants';
 import { allProductsMockData } from '@/app/core/mockData';
+import { APIResponseModel } from '@/app/models/ApiResponseModel';
 import { Product } from '@/app/models/product/ProductModels';
 import axios from 'axios';
 
-
-export async function getAllProducts(category :string,token: string) :Promise<Product[]> {
-    var url :string = API_URL + "/produit/get-all-produits" + category;
-    return new Promise<Product[]>((resolve, reject) => {
-        setTimeout( () => {
-            resolve(allProductsMockData);
-        }, 1500);
-    });
-    // return axios.get(url,{
-    //     headers: {
-    //     "Accept": "application/json",
-    //     "Content-Type": "application/json;charset=UTF-8",
-    //       "Authorization": `Bearer ${token}`
-    //     },
-    // })
+export async function getProductById(id :string) :Promise<APIResponseModel<Product>> {
+    var url :string = API_URL + "/produit/get/" + id;
+    return axios.get(url,{
+        headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json;charset=UTF-8"
+        },
+    })
 } 
 
-export async function addProduct(product: Product, token: string) :Promise<string> {
+
+export async function getAllProducts(category :string) :Promise<APIResponseModel<Product[]>> {
+    var url :string = API_URL + "/produit/get/all/" + category;
+    return axios.get(url,{
+        headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json;charset=UTF-8"
+        },
+    })
+} 
+
+export async function addProduct(product: Product, token: string) :Promise<APIResponseModel<boolean>> {
     var url :string = API_URL + "/produit/ajouter-produit";
-    return new Promise<string>((resolve, reject) => {
-        setTimeout( () => {
-            resolve("product-line-id");
-        }, 1500);
-    });
-    // return axios.post(url,request, {
-    //     headers: {
-    //     "Accept": "application/json",
-    //     "Content-Type": "application/json;charset=UTF-8",
-    //       "Authorization": `Bearer ${token}`
-    //     },
-    // })
+    return axios.post(url,product, {
+        headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json;charset=UTF-8",
+        "Authorization": `Bearer ${token}`
+        },
+    })
 } 
 
-export async function updateProduct(product: Product, token: string) :Promise<boolean> {
+export async function updateProduct(product: Product, token: string) :Promise<APIResponseModel<boolean>> {
     var url :string = API_URL + "/produit/mettre-a-jour";
-    return new Promise<boolean>((resolve, reject) => {
-        setTimeout( () => {
-            resolve(true);
-        }, 1500);
-    });
-    // return axios.put(url,request, {
-    //     headers: {
-    //     "Accept": "application/json",
-    //     "Content-Type": "application/json;charset=UTF-8",
-    //       "Authorization": `Bearer ${token}`
-    //     },
-    // })
+    return axios.put(url,product, {
+        headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json;charset=UTF-8",
+        "Authorization": `Bearer ${token}`
+        },
+    })
 } 
 
-export async function deleteProduct(productId: number, token: string) :Promise<boolean> {
-    var url :string = API_URL + "/produit/supprimer-produit";
-    return new Promise<boolean>((resolve, reject) => {
-        setTimeout( () => {
-            resolve(true);
-        }, 1500);
-    });
-    // return axios.put(url,request, {
-    //     headers: {
-    //     "Accept": "application/json",
-    //     "Content-Type": "application/json;charset=UTF-8",
-    //       "Authorization": `Bearer ${token}`
-    //     },
-    // })
+export async function deleteProduct(productId: number, token: string) :Promise<APIResponseModel<boolean>> {
+    var url :string = API_URL + "/produit/supprimer-produit/" + productId;
+    return axios.delete(url,{
+        headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json;charset=UTF-8",
+        "Authorization": `Bearer ${token}`
+        },
+    })
 }
 

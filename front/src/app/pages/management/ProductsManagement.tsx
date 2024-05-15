@@ -40,7 +40,7 @@ import { Button } from '@/components/ui/button';
 import { Input} from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Product } from '@/app/models/product/ProductModels'
-import { getAllProducts } from '@/app/services/product/ProductService'
+import { addProduct, deleteProduct, getAllProducts, updateProduct } from '@/app/services/product/ProductService'
 import { Textarea } from '@/components/ui/textarea'
 import {
   ColumnDef,
@@ -62,81 +62,153 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { ArrowUpDown} from "lucide-react"
-import { CATEGORIES } from '@/app/core/constants'
+import { CATEGORIES, ROLE, TOKEN } from '@/app/core/constants'
+import { toast } from 'sonner'
+import { useNavigate } from 'react-router-dom'
+import { Avatar, AvatarImage } from '@radix-ui/react-avatar'
 
 
 export default function ProductManagement() {
+
+  const navigator = useNavigate();
+
   const [stock, setStock] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [price, setPrice] = useState(0);
   const [comment, setComment] = useState("");
   const [description, setDescription] = useState("");
-  const [product_name, setProductName] = useState("");
+  const [name, setProductName] = useState("");
   const [category, setCategory] = useState("");
+  const [image, setImage] = useState("");
+
+  const [searchCategory, setSearchCategory] = useState("");
 
   const [token,setToken] = useState("");
-  const [products,setProducts] = useState([{} as Product]);
+  const [products,setProducts] = useState<Product[]>([]);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
 
   const extractProductCreateInterface = () => {
     return {
-        product_name: product_name,
+        name: name,
         category: category,
         discount: discount,
         price: price,
         stock: stock,
         description: description,
-        comment: comment
+        comment: comment,
+        image: image
     } as Product
   }   
 
   const extractProductUpdateInterface = (product: Product) => {
     return {
-        id_product: product.id_product,
-        product_name: product.product_name,
+        id: product.id,
+        name: product.name,
         category: product.category,
-        discount: discount,
-        price: price,
-        stock: stock,
-        description: description,
-        product_note: product.product_note,
-        comment: comment
+        discount: discount == null ? product.discount : discount,
+        price: price == null ? product.price : price,
+        stock: stock == null ? product.stock : stock,
+        description: description == null ? product.description : description,
+        comment: comment,
+        image:product.image,
+        addedDate:product.addedDate,
+        managedBy: product.managedBy
     } as Product
   }   
 
+  function extract64Base(e :any){
+    let reader = new FileReader();
+    reader.readAsDataURL(e.target.files[0]);
+    reader.onload = () => {
+        if(reader.result != null){
+            if(reader.result.toString() !== ''){
+                setImage(reader.result.toString());
+            } 
+        }
+    }
+}
+
   function createProduct(product: Product): void {
-    
+    addProduct(product, token)
+      .then(response => {
+          if(response.data){
+              toast.success(product.name + " ajouté avec succes");
+          }else{
+              toast.error("Echec de l'ajout");
+          }
+      }).catch(error => {
+         toast.error("Echec de l'ajout : " + error.response.data.message);
+      });
   }
 
-  function updateProduct(product:Product){
-
+  function update(product:Product){
+    updateProduct(product, token)
+    .then(response => {
+        if(response.data){
+            toast.success(product.name + " mis à jour avec succes");
+        }else{
+            toast.error("Echec de la mise à jour");
+        }
+    }).catch(error => {
+       toast.error("Echec de la mise à jour : " + error.response.data.message);
+    });
   }
 
-  function deleteProduct(productId: number){
-
+  function deleteProd(productId: number){
+    deleteProduct(productId, token)
+    .then(response => {
+        if(response.data){
+            toast.success("Produit supprimé avec succes");
+        }else{
+            toast.error("Echec de la suppression");
+        }
+    }).catch(error => {
+       toast.error("Echec de la suppression : " + error.response.data.message);
+    });
   }
 
   function loadData(category:string){
-    getAllProducts(category, token)
-      .then(data => {
-          setProducts(data);
-      })
+    getAllProducts(category)
+      .then(response => {
+          if(response.data != null)
+            setProducts(response.data);
+          else{
+            toast.error("Il n'y a pas de produits");
+        }
+    }).catch(error => {
+       toast.error("Les produits n'ont pas pu être récupérés : " + error);
+    });
   }
 
   useEffect(() => {
-      let tokenLocalStorage = localStorage.getItem("token");
-      if(tokenLocalStorage == null){
-          setToken("token");
+      let localToken = localStorage.getItem(TOKEN)
+      if( localToken == null){
+        navigator("/acceuil",{replace:true});
+      }else{
+        setToken(localToken);
       }
-      loadData("");
+      let role = localStorage.getItem(ROLE);
+      if(role == null || role != "ADMIN"){
+        navigator("/acceuil",{replace:true});
+      }
   },[]);
 
   const columns: ColumnDef<Product,any>[] = [
     {
-      accessorKey: "product_name",
-      accessorFn:(row) => row.product_name,
+      accessorKey: "image",
+      accessorFn:(row) => row.image,
+      header: () => <div></div>,
+      cell: ({ row }) => {
+        return <Avatar>
+                  <AvatarImage className="w-[80px] h-[80px] rounded" src={row.getValue("image")} />
+              </Avatar>
+      },
+    },
+    {
+      accessorKey: "name",
+      accessorFn:(row) => row.name,
       header: ({ column }) => {
         return (
           <Button
@@ -147,7 +219,7 @@ export default function ProductManagement() {
           </Button>
         )
       },
-      cell: ({ row }) => <div className="lowercase">{row.getValue("product_name")}</div>,
+      cell: ({ row }) => <div className="lowercase">{row.getValue("name")}</div>,
     },
     {
       accessorKey: "stock",
@@ -180,14 +252,6 @@ export default function ProductManagement() {
       },
     },
     {
-      accessorKey: "product_note",
-      accessorFn:(row) => row.product_note,
-      header: () => <div >Note</div>,
-      cell: ({ row }) => {
-        return <div className="font-medium">{row.getValue("product_note")} /10</div>
-      },
-    },
-    {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
@@ -215,7 +279,7 @@ export default function ProductManagement() {
                 <DialogHeader>
                   <DialogTitle>Mise à jour produit</DialogTitle>
                   <DialogDescription>
-                    Produit : {product.product_name}
+                    Produit : {product.name}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4">
@@ -243,7 +307,7 @@ export default function ProductManagement() {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button onClick={() => updateProduct(extractProductUpdateInterface(product))}>Sauvegarder</Button>
+                  <Button onClick={() => update(extractProductUpdateInterface(product))}>Sauvegarder</Button>
                 </DialogFooter>
               </DialogContent>
             </Dialog>
@@ -252,14 +316,14 @@ export default function ProductManagement() {
             <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Êtes vous sur de vouloir supprimer le produit : {product.product_name}?</AlertDialogTitle>
+                  <AlertDialogTitle>Êtes vous sur de vouloir supprimer le produit : {product.name}?</AlertDialogTitle>
                   <AlertDialogDescription>
                     Cette action ne peut pas être annulée.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => deleteProduct(product.id_product)}>Confirmer</AlertDialogAction>
+                  <AlertDialogAction onClick={() => deleteProd(product.id)}>Confirmer</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -298,15 +362,28 @@ export default function ProductManagement() {
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
+      <div className="flex items-center py-4 justify-between">
         <Input
           placeholder="Filtrez les produits..."
-          value={(table.getColumn("product_name")?.getFilterValue() as string) ?? ""}
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("product_name")?.setFilterValue(event.target.value)
+            table.getColumn("name")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
+
+        <div className="w-[250px]">
+          <Select onValueChange={(e) => loadData(e)}>
+            <SelectTrigger>
+              <SelectValue placeholder="Categorie..." />
+            </SelectTrigger>
+            <SelectContent>
+              {CATEGORIES.map((category) => (
+                <SelectItem className="cursor-pointer" value={category.title}>{category.title}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         <Button onClick={() => setIsCreateDialogOpen(true)}>Ajouter produit</Button>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
@@ -317,18 +394,22 @@ export default function ProductManagement() {
                 Entrez les informations du produit ici.
               </DialogDescription>
             </DialogHeader>
+
+            <div className="grid max-w-sm items-center gap-1.5 my-5">
+                <Input id="picture" type="file" accept=".png,.jpg,.jpeg" onChange={e => extract64Base(e)}/>
+            </div>
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label>Nom</Label>
                 <Input onChange={e => setProductName(e.target.value)} />
               </div>
-              <Select>
+              <Select onValueChange={(e) => setCategory(e)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Categorie..." />
                 </SelectTrigger>
                 <SelectContent>
                   {CATEGORIES.map((category) => (
-                    <SelectItem className="cursor-pointer" value={category}>{category}</SelectItem>
+                    <SelectItem className="cursor-pointer" value={category.title}>{category.title}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -361,6 +442,7 @@ export default function ProductManagement() {
           </DialogContent>
         </Dialog>
       </div>
+      
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -384,9 +466,7 @@ export default function ProductManagement() {
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                >
+                <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(
