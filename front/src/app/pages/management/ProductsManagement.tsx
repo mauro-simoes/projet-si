@@ -54,7 +54,15 @@ import {
   getSortedRowModel,
   useReactTable
 } from "@tanstack/react-table"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { ArrowUpDown} from "lucide-react"
+import { CATEGORIES } from '@/app/core/constants'
 
 
 export default function ProductManagement() {
@@ -72,6 +80,18 @@ export default function ProductManagement() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
 
+  const extractProductCreateInterface = () => {
+    return {
+        product_name: product_name,
+        category: category,
+        discount: discount,
+        price: price,
+        stock: stock,
+        description: description,
+        comment: comment
+    } as Product
+  }   
+
   const extractProductUpdateInterface = (product: Product) => {
     return {
         id_product: product.id_product,
@@ -84,9 +104,17 @@ export default function ProductManagement() {
         product_note: product.product_note,
         comment: comment
     } as Product
-}
+  }   
+
+  function createProduct(product: Product): void {
+    
+  }
 
   function updateProduct(product:Product){
+
+  }
+
+  function deleteProduct(productId: number){
 
   }
 
@@ -231,7 +259,7 @@ export default function ProductManagement() {
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction>Confirmer</AlertDialogAction>
+                  <AlertDialogAction onClick={() => deleteProduct(product.id_product)}>Confirmer</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -279,6 +307,59 @@ export default function ProductManagement() {
           }
           className="max-w-sm"
         />
+
+        <Button onClick={() => setIsCreateDialogOpen(true)}>Ajouter produit</Button>
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Création produit</DialogTitle>
+              <DialogDescription>
+                Entrez les informations du produit ici.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label>Nom</Label>
+                <Input onChange={e => setProductName(e.target.value)} />
+              </div>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Categorie..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {CATEGORIES.map((category) => (
+                    <SelectItem className="cursor-pointer" value={category}>{category}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <div className="grid grid-cols-3 gap-6">
+                <div className="grid gap-2">
+                  <Label>Stock</Label>
+                  <Input type='number' min="0" onChange={e => setStock(Number(e.target.value))} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Remise en %</Label>
+                  <Input min="0" max="100" onChange={e => setDiscount(Number(e.target.value))} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Prix</Label>
+                  <Input min="0" onChange={e => setPrice(Number(e.target.value))} />
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <Label>Comment</Label>
+                <Input onChange={e => setComment(e.target.value)} />
+              </div>
+              <div className="grid gap-2">
+                <Label>Description</Label>
+                <Textarea onChange={e => setDescription(e.target.value)} />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button onClick={() => createProduct(extractProductCreateInterface())}>Créer</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
       <div className="rounded-md border">
         <Table>

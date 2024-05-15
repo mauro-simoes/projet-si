@@ -10,7 +10,7 @@ import Management from "./pages/management/Management";
 const router = createHashRouter([
   {
     path:"/",
-    element:<Produits/>
+    element:<Management/>
   },
   {
     path:"/inscription",

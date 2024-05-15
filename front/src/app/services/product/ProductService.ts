@@ -5,7 +5,7 @@ import axios from 'axios';
 
 
 export async function getAllProducts(category :string,token: string) :Promise<Product[]> {
-    var url :string = API_URL + "/produit/get-all-produits/" + category;
+    var url :string = API_URL + "/produit/get-all-produits" + category;
     return new Promise<Product[]>((resolve, reject) => {
         setTimeout( () => {
             resolve(allProductsMockData);
@@ -20,11 +20,11 @@ export async function getAllProducts(category :string,token: string) :Promise<Pr
     // })
 } 
 
-export async function addProduct(product: Product, token: string) :Promise<boolean> {
-    var url :string = API_URL + "/produit/get-all-produits/";
-    return new Promise<boolean>((resolve, reject) => {
+export async function addProduct(product: Product, token: string) :Promise<string> {
+    var url :string = API_URL + "/produit/ajouter-produit";
+    return new Promise<string>((resolve, reject) => {
         setTimeout( () => {
-            resolve(true);
+            resolve("product-line-id");
         }, 1500);
     });
     // return axios.post(url,request, {
@@ -37,7 +37,7 @@ export async function addProduct(product: Product, token: string) :Promise<boole
 } 
 
 export async function updateProduct(product: Product, token: string) :Promise<boolean> {
-    var url :string = API_URL + "/user/mise-a-jour";
+    var url :string = API_URL + "/produit/mettre-a-jour";
     return new Promise<boolean>((resolve, reject) => {
         setTimeout( () => {
             resolve(true);
@@ -51,4 +51,20 @@ export async function updateProduct(product: Product, token: string) :Promise<bo
     //     },
     // })
 } 
+
+export async function deleteProduct(productId: number, token: string) :Promise<boolean> {
+    var url :string = API_URL + "/produit/supprimer-produit";
+    return new Promise<boolean>((resolve, reject) => {
+        setTimeout( () => {
+            resolve(true);
+        }, 1500);
+    });
+    // return axios.put(url,request, {
+    //     headers: {
+    //     "Accept": "application/json",
+    //     "Content-Type": "application/json;charset=UTF-8",
+    //       "Authorization": `Bearer ${token}`
+    //     },
+    // })
+}
 
