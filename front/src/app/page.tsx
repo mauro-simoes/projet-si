@@ -6,6 +6,7 @@ import Accueil from "./pages/Accueil";
 import {RouterProvider, createHashRouter } from "react-router-dom";
 import Management from "./pages/management/Management";
 import DetailCategorie from "./pages/DetailCategorie";
+import Panier from "./pages/Panier";
 import React from "react";
 
 const router = createHashRouter([
@@ -36,7 +37,11 @@ const router = createHashRouter([
   {
     path:"/accueil",
     element: <Accueil/>
-  }
+  },
+  {
+  path:"/panier",
+  element: <Panier/>
+}
 ]);
 
 export default function Home() {

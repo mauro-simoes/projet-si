@@ -4,7 +4,7 @@ import { APIResponseModel } from '@/app/models/ApiResponseModel';
 import { Product } from '@/app/models/product/ProductModels';
 import axios from 'axios';
 
-export async function getProductById(id :string) :Promise<APIResponseModel<Product>> {
+export async function getProductById(id :number) :Promise<APIResponseModel<Product>> {
     var url :string = API_URL + "/produit/get/" + id;
     return axios.get(url,{
         headers: {

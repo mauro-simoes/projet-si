@@ -1,5 +1,6 @@
-import React from 'react';
-import { getPanier } from '../services/PanierService';
+import React, { useEffect } from 'react';
+import { Product } from '../models/product/ProductModels';
+import { CATEGORIES, PANIER, ROLE, TOKEN } from '../core/constants';
 import {
   Card,
   CardContent,
@@ -20,16 +21,50 @@ import {
   TabsContent,
 } from "@/components/ui/tabs"
 import { Button } from '@/components/ui/button';
+import { getProductById } from '../services/product/ProductService';
+import { toast } from 'sonner';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Panier() {
 
-  let total = 0;
-  function getTotal(){
-    getPanier().map((produit) => {
-      total += produit.price;
-    })
-    return total;
-  }
+  // let total = 0;
+  // function getTotal(){
+  //   getPanier().map((produit) => {
+  //     total += produit.price;
+  //   })
+  //   return total;
+  // }
+
+  const navigator = useNavigate();
+  const [products,setProducts] = useState<Product[]>([]);
+  const [token,setToken] = useState("");
+
+  useEffect(() => {
+    let localToken = localStorage.getItem(TOKEN)
+    if( localToken == null){
+      navigator("/accueil",{replace:true});
+    }else{
+      setToken(localToken);
+    }
+    let panier = localStorage.getItem(PANIER)
+    if(panier != null){
+      panier.split(",");
+    }
+},[]);
+
+  function loadData(productId:number){
+    getProductById(productId)
+      .then(response => {
+          if(response.data != null)
+            products.push(response.data);
+          else{
+            toast.error("Il n'y a pas de produits");
+        }
+    }).catch(error => {
+       toast.error("Les produits n'ont pas pu être récupérés : " + error.response.data.message);
+      });
+    }
 
     return (
 
@@ -51,18 +86,18 @@ function Panier() {
                         </TableHead>
                         <TableHead>Nom</TableHead>
                         <TableHead className="hidden md:table-cell">
-                          Prix
+                          <span>Prix</span>
                         </TableHead>
+                        <TableCell className="hidden md:table-cell">
+                          <span>Quantité</span>
+                        </TableCell>
                         <TableHead className="hidden md:table-cell">
                           Actions
-                        </TableHead>
-                        <TableHead>
-                          <span className="sr-only">Actions</span>
                         </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {getPanier().map((produit) => (
+                      {products.map((produit) => (
                         <TableRow>
                         <TableCell className="hidden sm:table-cell">
                           {produit.img}
