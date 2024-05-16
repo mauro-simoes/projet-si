@@ -60,6 +60,7 @@ export default function UserManagement() {
       then(data => {
         if(data){
           toast.success("Profil validé avec succes");
+          loadData(tokenLocalStorage);
         }else{
           toast.error("Echec de la validation");
         }
@@ -67,7 +68,6 @@ export default function UserManagement() {
       catch(error => {
         toast.error("Echec de la validation" + error.response.data.message);
       });
-      loadData(tokenLocalStorage);
     }
   }
 
@@ -80,6 +80,7 @@ export default function UserManagement() {
       then(data => {
         if(data){
           toast.success("Profil radié avec succes");
+          loadData(tokenLocalStorage);
         }else{
           toast.error("Echec de la radiation");
         }
@@ -87,7 +88,6 @@ export default function UserManagement() {
       catch(error => {
         toast.error("Echec de la radiation" + error.response.data.message);
       });
-      loadData(tokenLocalStorage);
     }
   }
 

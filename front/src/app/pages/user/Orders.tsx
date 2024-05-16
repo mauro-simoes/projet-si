@@ -92,7 +92,7 @@ export default function Orders() {
                                     <div className="font-medium">{new Date(order.commandDateTime).toISOString().split('T')[0]}</div>
                                 </TableCell>
                                 <TableCell>
-                                    {order.total} €
+                                    {order.total.toFixed(2)} €
                                 </TableCell>
                                 <TableCell>
                                     {order.deliveryAddress}
@@ -124,7 +124,7 @@ export default function Orders() {
                                                                     <span className="text-muted-foreground">
                                                                         {purchase.product.name} x <span>{purchase.quantite}</span>
                                                                     </span>
-                                                                    <span>{purchase.purchasePrice} €</span>
+                                                                    <span>{purchase.purchasePrice.toFixed(2)} €</span>
                                                                 </li>
                                                             ))}
                                                         </ul>
@@ -132,7 +132,7 @@ export default function Orders() {
                                                         <ul className="grid gap-3">
                                                             <li className="flex items-center justify-between font-semibold">
                                                                 <span className="text-muted-foreground">Total</span>
-                                                                <span>{order.total} €</span>
+                                                                <span>{order.total.toFixed(2)} €</span>
                                                             </li>
                                                         </ul>
                                                     </div>

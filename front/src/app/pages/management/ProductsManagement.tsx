@@ -66,96 +66,25 @@ import { CATEGORIES, ROLE, TOKEN } from '@/app/core/constants'
 import { toast } from 'sonner'
 import { useNavigate } from 'react-router-dom'
 import { Avatar, AvatarImage } from '@radix-ui/react-avatar'
+import ProductDialog from './ProductDialog'
 
 
 export default function ProductManagement() {
 
   const navigator = useNavigate();
 
-  const [stock, setStock] = useState(0);
-  const [discount, setDiscount] = useState(0);
-  const [price, setPrice] = useState(0);
-  const [comment, setComment] = useState("");
-  const [description, setDescription] = useState("");
-  const [name, setProductName] = useState("");
-  const [category, setCategory] = useState("");
-  const [image, setImage] = useState("");
-
-  const [searchCategory, setSearchCategory] = useState("");
-
   const [token,setToken] = useState("");
   const [products,setProducts] = useState<Product[]>([]);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isAlertDialogOpen, setIsAlertDialogOpen] = useState(false);
 
-  const extractProductCreateInterface = () => {
-    return {
-        name: name,
-        category: category,
-        discount: discount,
-        price: price,
-        stock: stock,
-        description: description,
-        comment: comment,
-        image: image
-    } as Product
-  }   
+  const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
+  const [productBefore, setProductBefore] = useState<Product>({} as Product);
+  const [action, setAction] = useState("CREATE");
 
-  const extractProductUpdateInterface = (product: Product) => {
-    return {
-        id: product.id,
-        name: product.name,
-        category: product.category,
-        discount: discount == null ? product.discount : discount,
-        price: price == null ? product.price : price,
-        stock: stock == null ? product.stock : stock,
-        description: description == null ? product.description : description,
-        comment: comment,
-        image:product.image,
-        addedDate:product.addedDate,
-        managedBy: product.managedBy
-    } as Product
-  }   
-
-  function extract64Base(e :any){
-    let reader = new FileReader();
-    reader.readAsDataURL(e.target.files[0]);
-    reader.onload = () => {
-        if(reader.result != null){
-            if(reader.result.toString() !== ''){
-                setImage(reader.result.toString());
-            } 
-        }
-    }
-  }
-
-  function createProduct(product: Product): void {
-    addProduct(product, token)
-      .then(response => {
-          if(response.data){
-              toast.success(product.name + " ajouté avec succes");
-          }else{
-              toast.error("Echec de l'ajout");
-          }
-          setIsCreateDialogOpen(false);
-          loadData(product.category);
-      }).catch(error => {
-         toast.error("Echec de l'ajout : " + error.response.data.message);
-      });
-  }
-
-  function update(product:Product){
-    updateProduct(product, token)
-    .then(response => {
-        if(response.data){
-            toast.success(product.name + " mis à jour avec succes");
-        }else{
-            toast.error("Echec de la mise à jour");
-        }
-    }).catch(error => {
-       toast.error("Echec de la mise à jour : " + error.response.data.message);
-    });
+  function prepareActionOnProduct(actionType:string, productToWorkOn:Product){
+      setAction(actionType);
+      setProductBefore(productToWorkOn);
+      setIsProductDialogOpen(true);
   }
 
   function deleteProd(productId: number){
@@ -287,49 +216,9 @@ export default function ProductManagement() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem className='cursor-pointer' onClick={() => setIsAlertDialogOpen(true)}>Supprimer</DropdownMenuItem>
-              <DropdownMenuItem className='cursor-pointer' onClick={() => setIsEditDialogOpen(true)}>Modifier</DropdownMenuItem>
+              <DropdownMenuItem className='cursor-pointer' onClick={() => prepareActionOnProduct("EDIT",product)}>Modifier</DropdownMenuItem>
             </DropdownMenuContent>
             </DropdownMenu>
-            
-
-            <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-              <DialogContent className="sm:max-w-[500px]">
-                <DialogHeader>
-                  <DialogTitle>Mise à jour produit</DialogTitle>
-                  <DialogDescription>
-                    Produit : {product.name}
-                  </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4">
-                  <div className="grid grid-cols-3 gap-6">
-                    <div className="grid gap-2">
-                      <Label>Stock</Label>
-                      <Input type='number' defaultValue={product?.stock} min="0" onChange={e => setStock(Number(e.target.value))} />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Remise en %</Label>
-                      <Input defaultValue={product?.discount} min="0" max="100" onChange={e => setDiscount(Number(e.target.value))} />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label>Prix</Label>
-                      <Input defaultValue={product?.price} min="0" onChange={e => setPrice(Number(e.target.value))} />
-                    </div>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Comment</Label>
-                    <Input value={product?.comment} disabled={true} />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Description</Label>
-                    <Textarea defaultValue={product?.description} onChange={e => setDescription(e.target.value)} />
-                  </div>
-                </div>
-                <DialogFooter>
-                  <Button onClick={() => update(extractProductUpdateInterface(product))}>Sauvegarder</Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-
 
             <AlertDialog open={isAlertDialogOpen} onOpenChange={setIsAlertDialogOpen}>
               <AlertDialogContent>
@@ -403,62 +292,9 @@ export default function ProductManagement() {
           </Select>
         </div>
 
-        <Button onClick={() => setIsCreateDialogOpen(true)}>Ajouter produit</Button>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Création produit</DialogTitle>
-              <DialogDescription>
-                Entrez les informations du produit ici.
-              </DialogDescription>
-            </DialogHeader>
+        <Button onClick={() => prepareActionOnProduct("CREATE",{} as Product)}>Ajouter produit</Button>
+        <ProductDialog open={isProductDialogOpen} reloadData={(category:string) => loadData(category)} setOpenStatus={(value:boolean) => setIsProductDialogOpen(value)} token={token} action={action} productBefore={productBefore}/>
 
-            <div className="grid max-w-sm items-center gap-1.5 my-5">
-                <Input id="picture" type="file" accept=".png,.jpg,.jpeg" onChange={e => extract64Base(e)}/>
-            </div>
-            <div className="grid gap-4">
-              <div className="grid gap-2">
-                <Label>Nom</Label>
-                <Input onChange={e => setProductName(e.target.value)} />
-              </div>
-              <Select onValueChange={(e) => setCategory(e)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Categorie..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {CATEGORIES.map((category) => (
-                    <SelectItem className="cursor-pointer" value={category.title}>{category.title}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <div className="grid grid-cols-3 gap-6">
-                <div className="grid gap-2">
-                  <Label>Stock</Label>
-                  <Input type='number' min="0" onChange={e => setStock(Number(e.target.value))} />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Remise en %</Label>
-                  <Input min="0" max="100" onChange={e => setDiscount(Number(e.target.value))} />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Prix</Label>
-                  <Input min="0" onChange={e => setPrice(Number(e.target.value))} />
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <Label>Comment</Label>
-                <Input onChange={e => setComment(e.target.value)} />
-              </div>
-              <div className="grid gap-2">
-                <Label>Description</Label>
-                <Textarea onChange={e => setDescription(e.target.value)} />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button onClick={() => createProduct(extractProductCreateInterface())}>Créer</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
       
       <div className="rounded-md border">
