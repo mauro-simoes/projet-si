@@ -94,9 +94,7 @@ function DetailCategorie() {
       if(productLiked){
         unlikeProduct(product.id,localToken)
         .then(response => {
-          if(response.data){
-            toast.success(product.name + " unliké avec succes");
-          }else{
+          if(!response.data){
             toast.error("Echec du unlike");
           }
           loadData(product.category);
@@ -106,9 +104,7 @@ function DetailCategorie() {
       }else{
         likeProduct(product.id,localToken)
         .then(response => {
-          if(response.data){
-            toast.success(product.name + " liké avec succes");
-          }else{
+          if(!response.data){
             toast.error("Echec du like");
           }
           loadData(product.category);
@@ -116,12 +112,14 @@ function DetailCategorie() {
           toast.error("Echec du like : " + error.response.data.message);
         });
       }
+    }else{
+      toast.warning("Veuillez vous connecter");
     }
   }
     
   return (
     <>
-      <Header onLoginPage={false}/>
+      <Header />
         <div className="home-page mx-auto mt-20">
           <h1 className="text-3xl font-bold text-center my-10">Découvrez nos {category}</h1>
           <div className="flex flex-wrap justify-center gap-20 p-10">
@@ -136,7 +134,7 @@ function DetailCategorie() {
                   </CardContent>
                   <CardFooter className='block'>
                     {produit.discount > 0 && <span className='font-bold text-red-600'> -{produit.discount}% </span>}
-                    <span>{produit.discount > 0 ? (produit.price - (produit.price * produit.discount / 100)).toFixed(2) : produit.price.toFixed(2) }€</span>
+                    <span>{produit.discount > 0 ? (produit.price - (produit.price * produit.discount / 100)) : produit.price?.toFixed(2) }€</span>
                     <div className="flex justify-end ">
                       <Button className='mt-2' onClick={() => ajouterAuPanier(produit)}>
                         Ajouter au panier

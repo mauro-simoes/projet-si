@@ -65,14 +65,19 @@ function Produit() {
   },[]);
 
   const ajouterAuPanier = (product : Product) => {
-    let panier = localStorage.getItem(PANIER)
-    if(panier != null){
-      let parsedPanier = JSON.parse(panier);
-      parsedPanier[product.id] = 1;
-      localStorage.setItem(PANIER, JSON.stringify(parsedPanier));
+    let userIsLoggedIn = localStorage.getItem(TOKEN) != null;
+    if(userIsLoggedIn){
+      let panier = localStorage.getItem(PANIER)
+      if(panier != null){
+        let parsedPanier = JSON.parse(panier);
+        parsedPanier[product.id] = 1;
+        localStorage.setItem(PANIER, JSON.stringify(parsedPanier));
+      }else{
+        let parsedPanier = "{\"" + product.id + "\":1}"; 
+        localStorage.setItem(PANIER, JSON.stringify(JSON.parse(parsedPanier)));
+      }
     }else{
-      let parsedPanier = "{\"" + product.id + "\":1}"; 
-      localStorage.setItem(PANIER, JSON.stringify(JSON.parse(parsedPanier)));
+      toast.warning("Veuillez vous connecter");
     }
   };
 
@@ -83,9 +88,7 @@ function Produit() {
       if(productLiked){
         unlikeProduct(product.id,localToken)
         .then(response => {
-          if(response.data){
-            toast.success(product.name + " unliké avec succes");
-          }else{
+          if(!response.data){
             toast.error("Echec du unlike");
           }
           loadData(product.id);
@@ -95,9 +98,7 @@ function Produit() {
       }else{
         likeProduct(product.id,localToken)
         .then(response => {
-          if(response.data){
-            toast.success(product.name + " liké avec succes");
-          }else{
+          if(!response.data){
             toast.error("Echec du like");
           }
           loadData(product.id);
@@ -105,6 +106,8 @@ function Produit() {
           toast.error("Echec du like : " + error.response.data.message);
         });
       }
+    }else{
+      toast.warning("Veuillez vous connecter");
     }
   }
     
@@ -124,7 +127,7 @@ function Produit() {
                   <span>{product.description}</span>
                   <div  className="flex justify-between items-end">
                     {product.discount > 0 && <span className='font-bold text-red-600'> -{product.discount}% </span>}
-                    <span className='font-bold'>{product.discount > 0 ? (product.price - (product.price * product.discount / 100)).toFixed(2) : product.price.toFixed(2) }€</span>
+                    <span className='font-bold'>{product.discount > 0 ? (product.price - (product.price * product.discount / 100)).toFixed(2) : product.price?.toFixed(2) }€</span>
                     <div className="flex justify-end items-end">
                       <Button className='mt-2' onClick={() => ajouterAuPanier(product)}>
                         Ajouter au panier
