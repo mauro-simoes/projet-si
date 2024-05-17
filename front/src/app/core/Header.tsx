@@ -49,7 +49,7 @@ export default function Header(props:any){
   }
 
   return(
-    <Menubar className="bg-orange-500 text-white fixed top-0 w-full h-[50px] px-5 py-3 rounded-none">
+    <Menubar className="bg-orange-500 text-white fixed top-0 w-full h-[80px] px-5 py-3 rounded-none">
         <div className="flex items-center justify-between w-full">
           <MenubarMenu>
             <div className="flex space-x-4">
