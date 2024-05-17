@@ -19,7 +19,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>{children}</body>
-      <Toaster position="top-right" richColors closeButton />
+      <Toaster position="top-right" toastOptions={{
+    classNames: {
+      error: 'bg-red-400 text-black',
+      success: 'bg-green-400 text-black',
+      warning: 'text-yellow-400',
+      info: 'bg-blue-400',
+    },
+  }} closeButton />
     </html>
   );
 }

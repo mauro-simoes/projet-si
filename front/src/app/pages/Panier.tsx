@@ -137,7 +137,7 @@ export default function Panier() {
         <CardHeader>
           <CardTitle>Panier</CardTitle>
           <CardDescription>
-            Gérer votre panier et procéder au paiement !
+            Gérez votre panier et procédez au paiement.
           </CardDescription>
         </CardHeader>
         <CardContent>

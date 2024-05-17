@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import {
   Card,
@@ -11,7 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { getAllProducts, likeProduct, unlikeProduct } from '../services/product/ProductService';
+import { getAllProducts, getProductById, likeProduct, unlikeProduct } from '../services/product/ProductService';
 import { Product } from '../models/product/ProductModels';
 import { toast } from 'sonner';
 import { CATEGORIES, PANIER, ROLE, TOKEN } from '../core/constants';
@@ -20,36 +20,31 @@ import Header from '../core/Header';
 import { Purchase } from '../models/product/Order';
 import Footer from '../core/Footer';
 
-function DetailCategorie() {
+function Produit() {
   
-  const { categorieId } = useParams();
+  const { productId } = useParams();
   const navigate = useNavigate();
 
-  const[category,setCategory] = useState("");
-  const [products, setProducts] = useState<Product[]>([]);
+  const [product, setProduct] = useState<Product>({} as Product);
   const [userLoggedIn,setUserLoggedIn] = useState(false);
   const [userId,setUserId] = useState(0);
 
-  function loadData(category:string){
-    getAllProducts(category)
+  function loadData(id:number){
+    getProductById(id)
       .then(response => {
           if(response.data != null)
-            setProducts(response.data);
+            setProduct(response.data);
           else{
-            toast.error("Il n'y a pas de produits");
+            toast.error("Le produit n'a pas été trouvé");
         }
     }).catch(error => {
-       toast.error("Les produits n'ont pas pu être récupérés : " + error.response.data.message);
+       toast.error("Le product n'a pas été trouvé : " + error.response.data.message);
     });
   }
 
   useEffect(() => {
-    if(categorieId != null){
-      let categoryObj = CATEGORIES.find(category => category.id === parseInt(categorieId));
-      if(categoryObj != null){
-        setCategory(categoryObj.title);
-        loadData(categoryObj.title);
-      }
+    if(productId != null){
+        loadData(parseInt(productId));
     }else{
       navigate("/accueil",{replace:true});
     }
@@ -69,14 +64,14 @@ function DetailCategorie() {
     }
   },[]);
 
-  const ajouterAuPanier = (produit : Product) => {
+  const ajouterAuPanier = (product : Product) => {
     let panier = localStorage.getItem(PANIER)
     if(panier != null){
       let parsedPanier = JSON.parse(panier);
-      parsedPanier[produit.id] = 1;
+      parsedPanier[product.id] = 1;
       localStorage.setItem(PANIER, JSON.stringify(parsedPanier));
     }else{
-      let parsedPanier = "{\"" + produit.id + "\":1}"; 
+      let parsedPanier = "{\"" + product.id + "\":1}"; 
       localStorage.setItem(PANIER, JSON.stringify(JSON.parse(parsedPanier)));
     }
   };
@@ -93,7 +88,7 @@ function DetailCategorie() {
           }else{
             toast.error("Echec du unlike");
           }
-          loadData(product.category);
+          loadData(product.id);
         }).catch(error => {
           toast.error("Echec du unlike : " + error.response.data.message);
         });
@@ -105,7 +100,7 @@ function DetailCategorie() {
           }else{
             toast.error("Echec du like");
           }
-          loadData(product.category);
+          loadData(product.id);
         }).catch(error => {
           toast.error("Echec du like : " + error.response.data.message);
         });
@@ -117,31 +112,30 @@ function DetailCategorie() {
     <>
       <Header />
         <div className="home-page mx-auto mt-20">
-          <h1 className="text-3xl font-bold text-center my-10">Découvrez nos {category}</h1>
-          <div className="flex flex-wrap justify-center gap-20 p-10">
-            {products.map((produit) => (
-              <Link key={produit.name} className="w-60 p-5" to={`/produit/${produit.id}`}>
-                <Card style={{ height: '400px', width: '240px' }}>
-                  <CardHeader>
-                    <CardTitle>{produit.name}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <img src={produit.image} className="w-full h-auto" alt="img non trouvé" />
-                  </CardContent>
-                  <CardFooter className='block'>
-                    <span>{produit.discount > 0 ? (produit.price - (produit.price * produit.discount / 100)) : produit.price }€</span>
-                    <div className="flex justify-end ">
-                      <Button className='mt-2' onClick={() => ajouterAuPanier(produit)}>
+            <Card className='	max-w-[800px]'>
+              <CardHeader>
+                <CardTitle>{product.name}</CardTitle>
+              </CardHeader>
+              <CardContent className='flex-row flex'>
+                <div className='w-[45%]'>
+                  <img src={product.image} className="w-full aspect-square" alt="img non trouvé" />
+                </div>
+                <div className='w-[50%] flex justify-evenly flex-col'>
+                  <span>{product.description}</span>
+                  <div  className="flex justify-between items-end">
+                    <span className='font-bold'>{product.discount > 0 ? (product.price - (product.price * product.discount / 100)) : product.price }€</span>
+                    <div className="flex justify-end items-end">
+                      <Button className='mt-2' onClick={() => ajouterAuPanier(product)}>
                         Ajouter au panier
                       </Button>
-                      <img alt="coeur" onClick={() => toggleLike(produit)} className='ml-2 cursor-pointer' src={userLoggedIn && produit.likedBy?.find(user => user.id == userId) != null ? "heart-red.svg" :"heart.svg" } />
-                      <span className='ml-1.5 mt-2.5'>{produit.nbLike == null ? 0 : produit.nbLike}</span>
+                      <img alt="coeur" onClick={() => toggleLike(product)} className='ml-2 cursor-pointer' src={userLoggedIn && product.likedBy?.find(user => user.id == userId) != null ? "heart-red.svg" :"heart.svg" } />
+                      <span className='ml-1.5 mt-2.5'>{product.nbLike == null ? 0 : product.nbLike}</span>
                     </div>
-                  </CardFooter>
-                </Card>
-              </Link>
-            ))}
-          </div>
+                  </div>
+                </div>
+              </CardContent>
+              
+            </Card>
         </div>
 
         <Footer/>
@@ -149,4 +143,4 @@ function DetailCategorie() {
   );
   }
 
-export default DetailCategorie;
+export default Produit;

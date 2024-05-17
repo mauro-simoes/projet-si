@@ -9,6 +9,7 @@ import DetailCategorie from "./pages/DetailCategorie";
 import Panier from "./pages/Panier";
 import React from "react";
 import Orders from "./pages/user/Orders";
+import Produit from "./pages/Produit";
 
 const router = createHashRouter([
   {
@@ -34,6 +35,10 @@ const router = createHashRouter([
   {
     path:"/categories/:categorieId",
     element: <DetailCategorie/>
+  },
+  {
+    path:"/produit/:productId",
+    element: <Produit/>
   },
   {
     path:"/accueil",

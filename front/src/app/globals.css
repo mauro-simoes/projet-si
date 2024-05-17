@@ -59,6 +59,7 @@
       @apply bg-background text-foreground;
     }
     html, body, #app, #app>div {
-      height: 100%
+      height: 100%;
+      overflow-y: auto;
     }
   }
