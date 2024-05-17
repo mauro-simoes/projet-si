@@ -20,7 +20,7 @@ export default function Management() {
 
   return (
     <>
-      <Header />
+      <Header onLoginPage={false}/>
       <Tabs defaultValue="produits" className="mx-auto w-[1000px]">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="produits">Produits</TabsTrigger>

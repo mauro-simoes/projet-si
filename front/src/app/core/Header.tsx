@@ -16,7 +16,7 @@ import { toast } from "sonner";
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 
-export default function Header(){
+export default function Header(props:any){
 
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [userIsAdmin, setUserIsAdmin] = useState(false);
@@ -49,7 +49,7 @@ export default function Header(){
   }
 
   return(
-    <Menubar className="bg-orange-500 text-white fixed top-0 w-full h-[80px] px-5 py-3 rounded-none">
+    <Menubar className="bg-orange-500 text-white fixed top-0 w-full h-[50px] px-5 py-3 rounded-none">
         <div className="flex items-center justify-between w-full">
           <MenubarMenu>
             <div className="flex space-x-4">
@@ -71,12 +71,12 @@ export default function Header(){
                     <MenubarContent>
                         <Link to="/profil"><MenubarItem className="px-3 py-2 cursor-pointer">Profil</MenubarItem></Link>
                         {!userIsAdmin && <Link to="/commandes"><MenubarItem className="px-3 py-2 cursor-pointer">Vos Commandes</MenubarItem></Link>}
-                        <Link to="/connexion"><MenubarItem className="px-3 py-2 cursor-pointer" onClick={() => logOut()}>Déconnexion</MenubarItem></Link>
+                        <Link to="/accueil"><MenubarItem className="px-3 py-2 cursor-pointer" onClick={() => logOut()}>Déconnexion</MenubarItem></Link>
                     </MenubarContent>
                   </> 
               }
               {
-                !userLoggedIn &&
+                !userLoggedIn && !props.onLoginPage &&
                 <>
                   <Button variant="secondary" className="mx-8" onClick={() => navigate("/inscription",{replace:true})}>Inscription</Button>
                   <Button variant="secondary" onClick={() => navigate("/connexion",{replace:true})}>Connexion</Button>

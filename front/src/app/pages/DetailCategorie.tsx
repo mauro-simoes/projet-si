@@ -70,15 +70,21 @@ function DetailCategorie() {
   },[]);
 
   const ajouterAuPanier = (produit : Product) => {
-    let panier = localStorage.getItem(PANIER)
-    if(panier != null){
-      let parsedPanier = JSON.parse(panier);
-      parsedPanier[produit.id] = 1;
-      localStorage.setItem(PANIER, JSON.stringify(parsedPanier));
+    let userIsLoggedIn = localStorage.getItem(TOKEN) != null
+    if(userIsLoggedIn){
+      let panier = localStorage.getItem(PANIER)
+      if(panier != null){
+        let parsedPanier = JSON.parse(panier);
+        parsedPanier[produit.id] = 1;
+        localStorage.setItem(PANIER, JSON.stringify(parsedPanier));
+      }else{
+        let parsedPanier = "{\"" + produit.id + "\":1}"; 
+        localStorage.setItem(PANIER, JSON.stringify(JSON.parse(parsedPanier)));
+      }
     }else{
-      let parsedPanier = "{\"" + produit.id + "\":1}"; 
-      localStorage.setItem(PANIER, JSON.stringify(JSON.parse(parsedPanier)));
+      toast.info("Veuillez vous connecter");
     }
+    
   };
 
   const toggleLike = (product:Product) => {
@@ -115,7 +121,7 @@ function DetailCategorie() {
     
   return (
     <>
-      <Header />
+      <Header onLoginPage={false}/>
         <div className="home-page mx-auto mt-20">
           <h1 className="text-3xl font-bold text-center my-10">Découvrez nos {category}</h1>
           <div className="flex flex-wrap justify-center gap-20 p-10">
@@ -129,7 +135,8 @@ function DetailCategorie() {
                     <img src={produit.image} className="w-full h-auto" alt="img non trouvé" />
                   </CardContent>
                   <CardFooter className='block'>
-                    <span>{produit.discount > 0 ? (produit.price - (produit.price * produit.discount / 100)) : produit.price }€</span>
+                    {produit.discount > 0 && <span className='font-bold text-red-600'> -{produit.discount}% </span>}
+                    <span>{produit.discount > 0 ? (produit.price - (produit.price * produit.discount / 100)).toFixed(2) : produit.price.toFixed(2) }€</span>
                     <div className="flex justify-end ">
                       <Button className='mt-2' onClick={() => ajouterAuPanier(produit)}>
                         Ajouter au panier

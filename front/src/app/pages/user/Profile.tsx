@@ -234,7 +234,7 @@ export default function Profile() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <a href="mailto:videoson@gmail.com?subject=Retour sur experience" className="mx-auto">
+                    <a href={"mailto:videoson@gmail.com?subject=Retour sur experience"} className="mx-auto">
                     <Button >Envoyer</Button>
                     </a>
                 </CardFooter>

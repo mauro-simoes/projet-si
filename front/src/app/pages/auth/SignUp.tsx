@@ -28,6 +28,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { ROLE, TOKEN } from '@/app/core/constants';
 import { toast } from 'sonner';
+import Header from '@/app/core/Header';
 const formSchema = z.object({
     nom: z.string().min(1,"Veuillez entrer votre nom"),
     prenom: z.string().min(1,"Veuillez entrer votre prenom"),
@@ -87,7 +88,7 @@ export default function SignUp() {
     }
 
     return (
-        <Card className="mx-auto max-w-sm">
+        <><Header onLoginPage={true} /><Card className="mx-auto max-w-sm">
             <CardHeader>
                 <CardTitle className="text-xl">Inscription</CardTitle>
                 <CardDescription>
@@ -107,12 +108,11 @@ export default function SignUp() {
                                             <FormItem>
                                                 <FormLabel>Nom</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field}  />
+                                                    <Input {...field} />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
-                                        )}
-                                    />
+                                        )} />
                                 </div>
                                 <div className="grid gap-2">
                                     <FormField
@@ -126,8 +126,7 @@ export default function SignUp() {
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
-                                        )}
-                                    />
+                                        )} />
                                 </div>
                             </div>
                             <div className="grid gap-2">
@@ -138,12 +137,11 @@ export default function SignUp() {
                                         <FormItem>
                                             <FormLabel>Email</FormLabel>
                                             <FormControl>
-                                                <Input {...field}  />
+                                                <Input {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
-                                    )}
-                                />
+                                    )} />
                             </div>
                             <div className="grid gap-2">
                                 <FormField
@@ -153,12 +151,11 @@ export default function SignUp() {
                                         <FormItem>
                                             <FormLabel>Adresse</FormLabel>
                                             <FormControl>
-                                                <Input {...field}  />
+                                                <Input {...field} />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
-                                    )}
-                                />
+                                    )} />
                             </div>
                             <div className="grid gap-2">
                                 <FormField
@@ -172,8 +169,7 @@ export default function SignUp() {
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
-                                    )}
-                                />
+                                    )} />
                             </div>
                             <Button type="submit" className="w-full">S'inscrire</Button>
                         </div>
@@ -184,6 +180,6 @@ export default function SignUp() {
                     </div>
                 </Form>
             </CardContent>
-        </Card>
+        </Card></>
     );
 }

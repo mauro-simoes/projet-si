@@ -29,6 +29,7 @@ import { Input } from "@/components/ui/input"
 import { ROLE, TOKEN } from '@/app/core/constants';
 import { APIResponseModel } from '@/app/models/ApiResponseModel';
 import { toast } from 'sonner';
+import Header from '@/app/core/Header';
 
 const formSchema = z.object({
     email: z.string().email("Veuillez entrer un mail valide"),
@@ -80,7 +81,7 @@ export default function LogIn() {
     }
 
     return (
-        <Card className="mx-auto max-w-sm shadow-lg">
+        <><Header onLoginPage={true}/><Card className="mx-auto max-w-sm shadow-lg">
             <CardHeader>
                 <CardTitle className="text-xl">Connexion</CardTitle>
                 <CardDescription>
@@ -103,8 +104,7 @@ export default function LogIn() {
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
-                                    )}
-                                />
+                                    )} />
                             </div>
                             <div className="grid gap-2">
                                 <FormField
@@ -118,8 +118,7 @@ export default function LogIn() {
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
-                                    )}
-                                />
+                                    )} />
                             </div>
                             <Button type="submit" className="w-full">Connexion</Button>
                         </div>
@@ -130,7 +129,7 @@ export default function LogIn() {
                     </div>
                 </Form>
             </CardContent>
-        </Card>
+        </Card></>
         
     );
 }

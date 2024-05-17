@@ -110,7 +110,7 @@ function Produit() {
     
   return (
     <>
-      <Header />
+      <Header onLoginPage={false}/>
         <div className="home-page mx-auto mt-20">
             <Card className='	max-w-[800px]'>
               <CardHeader>
@@ -123,7 +123,8 @@ function Produit() {
                 <div className='w-[50%] flex justify-evenly flex-col'>
                   <span>{product.description}</span>
                   <div  className="flex justify-between items-end">
-                    <span className='font-bold'>{product.discount > 0 ? (product.price - (product.price * product.discount / 100)) : product.price }€</span>
+                    {product.discount > 0 && <span className='font-bold text-red-600'> -{product.discount}% </span>}
+                    <span className='font-bold'>{product.discount > 0 ? (product.price - (product.price * product.discount / 100)).toFixed(2) : product.price.toFixed(2) }€</span>
                     <div className="flex justify-end items-end">
                       <Button className='mt-2' onClick={() => ajouterAuPanier(product)}>
                         Ajouter au panier

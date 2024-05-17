@@ -131,7 +131,7 @@ export default function Panier() {
 
       <>
       
-      <Header />
+      <Header onLoginPage={false}/>
       
       <Card className='overflow-y-auto mx-auto max-h-[600px]'>
         <CardHeader>
