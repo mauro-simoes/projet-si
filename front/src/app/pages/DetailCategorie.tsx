@@ -24,6 +24,7 @@ function DetailCategorie() {
   
   const { categorieId } = useParams();
   const navigate = useNavigate();
+  const [userIsAdmin,setUserIsAdmin] = useState(false);
 
   const[category,setCategory] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
@@ -65,6 +66,8 @@ function DetailCategorie() {
       .catch(error => {
         toast.error("Echec de la mise à jour : " + error.response.data.message);
       });
+      let userIsAdmin = localStorage.getItem(ROLE) == "ADMIN";
+      setUserIsAdmin(userIsAdmin);
       setUserLoggedIn(true);
     }
   },[]);
@@ -83,13 +86,14 @@ function DetailCategorie() {
       }
       toast.success(produit.name + " ajouté au panier");
     }else{
-      toast.info("Veuillez vous connecter");
+      toast.warning("Veuillez vous connecter");
     }
     
   };
 
   const toggleLike = (product:Product) => {
     let localToken = localStorage.getItem(TOKEN);
+    if(userIsAdmin){return;}
     if(localToken != null){
       let productLiked = product.likedBy != null && product.likedBy.find(user => user.id == userId) != null;
       if(productLiked){
@@ -138,9 +142,9 @@ function DetailCategorie() {
                     {produit.discount > 0 && <span className='font-bold text-red-600'> -{produit.discount}% </span>}
                     <span>{produit.discount > 0 ? (produit.price - (produit.price * produit.discount / 100)) : produit.price?.toFixed(2) }€</span>
                     <div className="flex justify-end ">
-                      <Button className='mt-2' onClick={() => ajouterAuPanier(produit)}>
+                    {(!userLoggedIn || (userLoggedIn && !userIsAdmin)) && <Button className='mt-2' onClick={() => ajouterAuPanier(produit)}>
                         Ajouter au panier
-                      </Button>
+                      </Button>}
                       <img alt="coeur" onClick={() => toggleLike(produit)} className='ml-2 cursor-pointer' src={userLoggedIn && produit.likedBy?.find(user => user.id == userId) != null ? "heart-red.svg" :"heart.svg" } />
                       <span className='ml-1.5 mt-2.5'>{produit.nbLike == null ? 0 : produit.nbLike}</span>
                     </div>

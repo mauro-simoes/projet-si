@@ -24,6 +24,7 @@ function Produit() {
   
   const { productId } = useParams();
   const navigate = useNavigate();
+  const [userIsAdmin,setUserIsAdmin] = useState(false);
 
   const [product, setProduct] = useState<Product>({} as Product);
   const [userLoggedIn,setUserLoggedIn] = useState(false);
@@ -60,6 +61,8 @@ function Produit() {
       .catch(error => {
         toast.error("Echec de la mise à jour : " + error.response.data.message);
       });
+      let userIsAdmin = localStorage.getItem(ROLE) == "ADMIN";
+      setUserIsAdmin(userIsAdmin);
       setUserLoggedIn(true);
     }
   },[]);
@@ -84,6 +87,7 @@ function Produit() {
 
   const toggleLike = (product:Product) => {
     let localToken = localStorage.getItem(TOKEN);
+    if(userIsAdmin){return;}
     if(localToken != null){
       let productLiked = product.likedBy != null && product.likedBy.find(user => user.id == userId) != null;
       if(productLiked){
@@ -130,9 +134,9 @@ function Produit() {
                     {product.discount > 0 && <span className='font-bold text-red-600'> -{product.discount}% </span>}
                     <span className='font-bold'>{product.discount > 0 ? (product.price - (product.price * product.discount / 100)).toFixed(2) : product.price?.toFixed(2) }€</span>
                     <div className="flex justify-end items-end">
-                      <Button className='mt-2' onClick={() => ajouterAuPanier(product)}>
+                      {(!userLoggedIn || (userLoggedIn && !userIsAdmin)) && <Button className='mt-2' onClick={() => ajouterAuPanier(product)}>
                         Ajouter au panier
-                      </Button>
+                      </Button>}
                       <img alt="coeur" onClick={() => toggleLike(product)} className='ml-2 cursor-pointer' src={userLoggedIn && product.likedBy?.find(user => user.id == userId) != null ? "heart-red.svg" :"heart.svg" } />
                       <span className='ml-1.5 mt-2.5'>{product.nbLike == null ? 0 : product.nbLike}</span>
                     </div>

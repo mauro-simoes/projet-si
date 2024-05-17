@@ -17,7 +17,7 @@ export default function Accueil() {
     <>
     <Header onLoginPage={false}/>
     <div className="home-page mx-auto mt-20">
-      <h1 className="text-3xl font-bold underline text-center my-5">Découvrez nos catégories</h1>
+      <h1 className="text-3xl font-bold text-center my-5">Découvrez nos catégories</h1>
       <div className="flex flex-wrap justify-center gap-15 p-10">
         {CATEGORIES.map((category) => (
           <Link key={category.id} to={`/categories/${category.id}`}>
