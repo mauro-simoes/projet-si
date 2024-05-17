@@ -81,6 +81,7 @@ function DetailCategorie() {
         let parsedPanier = "{\"" + produit.id + "\":1}"; 
         localStorage.setItem(PANIER, JSON.stringify(JSON.parse(parsedPanier)));
       }
+      toast.success(produit.name + " ajouté au panier");
     }else{
       toast.info("Veuillez vous connecter");
     }
@@ -124,14 +125,15 @@ function DetailCategorie() {
           <h1 className="text-3xl font-bold text-center my-10">Découvrez nos {category}</h1>
           <div className="flex flex-wrap justify-center gap-20 p-10">
             {products.map((produit) => (
-              <Link key={produit.name} className="w-60 p-5" to={`/produit/${produit.id}`}>
-                <Card style={{ height: '400px', width: '240px' }}>
-                  <CardHeader>
-                    <CardTitle>{produit.name}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <img src={produit.image} className="w-full h-auto" alt="img non trouvé" />
-                  </CardContent>
+                <Card key={produit.name}  style={{ height: '400px', width: '240px' }}>
+                  <Link to={`/produit/${produit.id}`}>
+                    <CardHeader>
+                      <CardTitle>{produit.name}</CardTitle>
+                    </CardHeader>
+                      <CardContent>
+                        <img src={produit.image} className="w-full h-auto" alt="img non trouvé" />
+                      </CardContent>
+                    </Link>
                   <CardFooter className='block'>
                     {produit.discount > 0 && <span className='font-bold text-red-600'> -{produit.discount}% </span>}
                     <span>{produit.discount > 0 ? (produit.price - (produit.price * produit.discount / 100)) : produit.price?.toFixed(2) }€</span>
@@ -144,7 +146,6 @@ function DetailCategorie() {
                     </div>
                   </CardFooter>
                 </Card>
-              </Link>
             ))}
           </div>
         </div>

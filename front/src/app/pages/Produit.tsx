@@ -76,6 +76,7 @@ function Produit() {
         let parsedPanier = "{\"" + product.id + "\":1}"; 
         localStorage.setItem(PANIER, JSON.stringify(JSON.parse(parsedPanier)));
       }
+      toast.success(product.name + " ajouté au panier");
     }else{
       toast.warning("Veuillez vous connecter");
     }
