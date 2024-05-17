@@ -142,7 +142,7 @@ export default function UserManagement() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Client</TableHead>
-                  <TableHead>Statut</TableHead>
+                  <TableHead>Statut Compte</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
